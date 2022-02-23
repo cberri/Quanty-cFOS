@@ -20,19 +20,13 @@ The Quanty-cFOS tool is not only about cell detection but it uses the *z-score* 
 
 cFOS staining is known to work differently depending on many experimental factors that might include fixation, antibody type and batch, section thickness... . cFOS neurons manual count is extremely time consuming and can differ between people depending on the decision criteria. The cFOS automated intensity count can be used to significantly speed up the counting process and further reduce the human count bias
 
-The cFOS automated count algorithm computes the mean intensity value and the mean standard deviation of each segmented cell in the image, average these two values and compute the z-score ($$Z$$)
+The cFOS automated count algorithm computes the mean intensity value and the mean standard deviation of each segmented cell in the image, average these two values and compute the z-score (Z)
 
+![formula_1645614101](C:\Users\Carlo Beretta\Documents\GitHub\Quanty-cFOS\static\formula_1645614101.jpg)
 
-
-$$
-Z = \frac{x_i-u}σ \\
-$$
-
-*where:*	 $$x_i$$ is the single cell intensity
-				$$u$$  is the mean cell intensity
-				$$σ$$  is the standard deviation
-
-
+*where:*	  ![xi_1645613569](C:\Users\Carlo Beretta\Documents\GitHub\Quanty-cFOS\static\xi_1645613569.jpg)is the single cell intensity
+				 ![mu_1645613934](C:\Users\Carlo Beretta\Documents\GitHub\Quanty-cFOS\static\mu_1645613934.jpg) is the mean cell intensity
+			 	![sigma_1645613989](C:\Users\Carlo Beretta\Documents\GitHub\Quanty-cFOS\static\sigma_1645613989.jpg) is the standard deviation
 
 The user can input the range of standard deviations (sigma) to decide the optimal cutoff for cFOS cell count. The cutoff optimization is critical to gain an accurate and robust cells number estimation. Indeed, we suggest to annotate manually few images and run the MATLAB correlation analysis provided with the Quanty-cFOS (`\validation\CorrelationAnalysis.mlx`) to estimate how the automated intensity cutoff correlate with human counts (see also the ValidationTable.xlsx file as example). The manual count can be performed using your favorite tool or by running the following IJ1 script: https://github.com/cberri/cFOS_ManualAnnotations_ImageJ-Fiji
 
@@ -42,7 +36,7 @@ The user can input the range of standard deviations (sigma) to decide the optima
 
 1. Clone the Quanty-cFOS repository in your favorite folder:
 
-   `git clone ADD HERE URL`
+   `git clone https://github.com/cberri/Quanty-cFOS.git`
 
 2. Drag and drop on the ImageJ/Fiji main window the *Quanty-cFOS.ijm* file
 
@@ -62,7 +56,7 @@ The user can input the range of standard deviations (sigma) to decide the optima
 
    
 
-   <img src="static/main_setting.png" alt="main_setting" style="zoom: 67%;" />
+   <img src="static/main_setting.png" alt="main_setting" style="zoom: 60%;" />
 
    
 
@@ -72,7 +66,7 @@ The user can input the range of standard deviations (sigma) to decide the optima
 
 
 
-<img src="static/user_input_setting.png" alt="user_input_setting" style="zoom: 67%;" />
+<img src="static/user_input_setting.png" alt="user_input_setting" style="zoom: 55%;" />
 
 
 
