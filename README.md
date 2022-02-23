@@ -22,11 +22,11 @@ cFOS staining is known to work differently depending on many experimental factor
 
 The cFOS automated count algorithm computes the mean intensity value and the mean standard deviation of each segmented cell in the image, average these two values and compute the z-score (Z)
 
-![formula_1645614101](C:\Users\Carlo Beretta\Documents\GitHub\Quanty-cFOS\static\formula_1645614101.jpg)
+![formula_1645614101](static/formula_1645614101.jpg)
 
-*where:*	  ![xi_1645613569](C:\Users\Carlo Beretta\Documents\GitHub\Quanty-cFOS\static\xi_1645613569.jpg)is the single cell intensity
-				 ![mu_1645613934](C:\Users\Carlo Beretta\Documents\GitHub\Quanty-cFOS\static\mu_1645613934.jpg) is the mean cell intensity
-			 	![sigma_1645613989](C:\Users\Carlo Beretta\Documents\GitHub\Quanty-cFOS\static\sigma_1645613989.jpg) is the standard deviation
+*where:*	![xi_1645613569](static/xi_1645613569.jpg)is the single cell intensity,
+		![mu_1645613934](static/mu_1645613934.jpg) is the mean cell intensity,
+		![sigma_1645613989](static/sigma_1645613989.jpg) is the standard deviation.
 
 The user can input the range of standard deviations (sigma) to decide the optimal cutoff for cFOS cell count. The cutoff optimization is critical to gain an accurate and robust cells number estimation. Indeed, we suggest to annotate manually few images and run the MATLAB correlation analysis provided with the Quanty-cFOS (`\validation\CorrelationAnalysis.mlx`) to estimate how the automated intensity cutoff correlate with human counts (see also the ValidationTable.xlsx file as example). The manual count can be performed using your favorite tool or by running the following IJ1 script: https://github.com/cberri/cFOS_ManualAnnotations_ImageJ-Fiji
 
@@ -56,7 +56,7 @@ The user can input the range of standard deviations (sigma) to decide the optima
 
    
 
-   <img src="static/main_setting.png" alt="main_setting" style="zoom: 60%;" />
+   <img src="static/main_setting.png" alt="main_setting" style="zoom: 55%;" />
 
    
 
