@@ -55,7 +55,7 @@ The user can input the range of standard deviations (sigma) to decide the optima
    - *Batch Analysis* and *Optimization Steps* allow to decide how many images will interactively pop up to the user and in case of *cFOS Automated Optimization* (see below), the number of images used to compute the intensity threshold cutoff for cFOS true positive and false positive cells. A recommendation for starting is to leave the box unchecked and proceed to the next step by pressing *OK*
 
    
-
+   
    <img src="static/main_setting.png" alt="main_setting" style="zoom: 40%;" />
 
    
