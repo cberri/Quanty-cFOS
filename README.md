@@ -1,5 +1,9 @@
 # Quanty-cFOS for ImageJ/Fiji
 
+<p align="center">
+  <img width="924" height="412" src="static/cover.jpg">
+</p
+
 The Quanty-cFOS.ijm is a flexible and reproducible ImageJ/Fiji tool to count cFOS labelled cells or more generally to count any cell maker in 2D fluorescent images or on Maximum Intensity Projections (MIP). For flexibility reasons this tool is implemented as macro-set (IJ1) for Image/Fiji (version 1.53c)
 
 The Quanty-cFOS tool uses two different cell detection methods:
