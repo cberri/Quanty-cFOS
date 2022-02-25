@@ -56,7 +56,7 @@ The user can input the range of standard deviations (sigma) to decide the optima
 
      
 
-   ![main_setting](F:\GitHub\Quanty-cFOS\static\main_setting-16458009483501.png)
+   ![main_setting](static/main_setting-16458009483501.png)
 
    
 
@@ -66,7 +66,7 @@ The user can input the range of standard deviations (sigma) to decide the optima
 
    
 
-   ![user_input_setting](F:\GitHub\Quanty-cFOS\static\user_input_setting-16458009654102.png)
+   ![user_input_setting](static/user_input_setting-16458009654102.png)
 
    
 
