@@ -1,4 +1,4 @@
-## Quanty-cFOS for ImageJ/Fiji
+# Quanty-cFOS for ImageJ/Fiji
 
 The Quanty-cFOS.ijm is a flexible and reproducible ImageJ/Fiji tool to count cFOS labelled cells or more generally to count any cell maker in 2D fluorescent images or on Maximum Intensity Projections (MIP). For flexibility reasons this tool is implemented as macro-set (IJ1) for Image/Fiji (version 1.53c)
 
@@ -16,7 +16,7 @@ The Quanty-cFOS tool is not only about cell detection but it uses the *z-score* 
 
 
 
-#### cFOS Automated Intensity Count (Experimental)
+## cFOS Automated Intensity Count (Experimental)
 
 cFOS staining is known to work differently depending on many experimental factors that might include fixation, antibody type and batch, section thickness... . cFOS neurons manual count is extremely time consuming and can differ between people depending on the decision criteria. The cFOS automated intensity count can be used to significantly speed up the counting process and further reduce the human count bias
 
@@ -25,14 +25,14 @@ The cFOS automated count algorithm computes the mean intensity value and the mea
 ![formula_1645614101](static/formula_1645614101.jpg)
 
 *where:*	![xi_1645613569](static/xi_1645613569.jpg)is the single cell intensity,
-		![mu_1645613934](static/mu_1645613934.jpg) is the mean cell intensity,
-		![sigma_1645613989](static/sigma_1645613989.jpg) is the standard deviation.
+			   ![mu_1645613934](static/mu_1645613934.jpg) is the mean cell intensity,
+			   ![sigma_1645613989](static/sigma_1645613989.jpg) is the standard deviation.
 
 The user can input the range of standard deviations (sigma) to decide the optimal cutoff for cFOS cell count. The cutoff optimization is critical to gain an accurate and robust cells number estimation. Indeed, we suggest to annotate manually few images and run the MATLAB correlation analysis provided with the Quanty-cFOS (`\validation\CorrelationAnalysis.mlx`) to estimate how the automated intensity cutoff correlate with human counts (see also the ValidationTable.xlsx file as example). The manual count can be performed using your favorite tool or by running the following IJ1 script: https://github.com/cberri/cFOS_ManualAnnotations_ImageJ-Fiji
 
 
 
-#### Step-by-step Quanty-cFOS Analysis with StarDist 2D
+## Step-by-step Quanty-cFOS Analysis with StarDist 2D
 
 1. Clone the Quanty-cFOS repository in your favorite folder:
 
@@ -54,23 +54,23 @@ The user can input the range of standard deviations (sigma) to decide the optima
 
    - *Batch Analysis* and *Optimization Steps* allow to decide how many images will interactively pop up to the user and in case of *cFOS Automated Optimization* (see below), the number of images used to compute the intensity threshold cutoff for cFOS true positive and false positive cells. A recommendation for starting is to leave the box unchecked and proceed to the next step by pressing *OK*
 
-   
+     
 
-   <img src="static/main_setting.png" alt="main_setting" style="zoom: 80%;" />
-
-   
-
-6. The *Input Dialog Box* pops up and the user can specify the input directory with the raw images to process. The input raw images need to have one channel as MIP or z-stacks. In case of a z-stack, the Quanty-cFOS computes the MIP and start the 2D cell segmentation. To test the Quanty-cFOS you can use the sample images provided together with the tool (`\samples`)
-
-7. The *User Input Setting Window* pops up. Please check the *Help* to get familiar with the different options. *Tip*: starting with the default setting can give already decent counts
+   ![main_setting](F:\GitHub\Quanty-cFOS\static\main_setting-16458009483501.png)
 
    
 
-   <img src="static/user_input_setting.png" alt="user_input_setting" style="zoom:67%;" />
+   - The *Input Dialog Box* pops up and the user can specify the input directory with the raw images to process. The input raw images need to have one channel as MIP or z-stacks. In case of a z-stack, the Quanty-cFOS computes the MIP and start the 2D cell segmentation. To test the Quanty-cFOS you can use the sample images provided together with the tool (`\samples`)
+
+6. The *User Input Setting Window* pops up. Please check the *Help* to get familiar with the different options. *Tip*: starting with the default setting can give already decent counts
 
    
 
-8. Press *OK*, the first image will be processed and the *User Input Setting Window* pops up again, every time a new image is processed. To automate further the counting and do not display the *User Input Setting* dialog box for each image the user can rerun the Quanty-cFOS tool. In this case, the user can check in the *Main Setting Windows* the *Batch Analysis* and set the *Optimization Steps* to the number of images listed in the input raw directory (*e.g.:* 10 Images = 10 Optimization Steps)
+   ![user_input_setting](F:\GitHub\Quanty-cFOS\static\user_input_setting-16458009654102.png)
+
+   
+
+   Press *OK*, the first image will be processed and the *User Input Setting Window* pops up again, every time a new image is processed. To automate further the counting and do not display the *User Input Setting* dialog box for each image the user can rerun the Quanty-cFOS tool. In this case, the user can check in the *Main Setting Windows* the *Batch Analysis* and set the *Optimization Steps* to the number of images listed in the input raw directory (*e.g.:* 10 Images = 10 Optimization Steps)
 
 9. The Quanty-cFOS output is a folder with sub-folders for each raw image processed. Each sub-folder has the same name of the input image and contains:
 
@@ -84,7 +84,7 @@ The user can input the range of standard deviations (sigma) to decide the optima
 
     
 
-#### Step-by-step Quanty-cFOS Analysis with ilastik Pixel Classification Workflow
+## Step-by-step Quanty-cFOS Analysis with ilastik Pixel Classification Workflow
 
 1. Open ilastik and create an ilastik pixel classification project. Read the ilastik documentation to learn more https://www.ilastik.org/documentation/pixelclassification/pixelclassification
 
@@ -102,12 +102,12 @@ The user can input the range of standard deviations (sigma) to decide the optima
 
    
 
-#### Quanty-cFOS: *cFOS Manual Optimization*
+## Quanty-cFOS: *cFOS Manual Optimization*
 
 A crucial step in the automated cFOS count is the intensity threshold value used to decide the cutoff, in particular, if the images are very different from each other. To help users in testing different thresholds and optimize their cells count, we implemented the cFOS Manual Optimization function. By selecting this, the user can get a preview of each image during the analysis and manually choose different intensity threshold values for true positive cFOS cells. Moreover, different size filters can be applied to remove small, detected particles in the images. The number of images previewed is specified using the *Batch Analysis* option in combination with the *Optimization Steps*. Indeed, only these images are used for testing different thresholds and the average intensity value of these thresholds is applied on all the following images in the input raw directory
 
 
 
-#### Quanty-cFOS: Cell Batch Count without *cFOS Optimizations*
+## Quanty-cFOS: Cell Batch Count without *cFOS Optimizations*
 
 All cell counts is possible and can be achieved by unchecking the *cFOS Automated Optimization* and the *cFOS Manual Optimization*. In this way all the cells in the image are counted without an intensity threshold cutoff optimization. Only a size cutoff filter (based on cell area) is applied using 3 folds below and above the area standard deviation of the cells in the image. This option is supported only with *Batch Analysis* option and it doesn't use any *Optimization Steps* (process all the images in the input directory one-by-one)
