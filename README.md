@@ -27,7 +27,7 @@ cFOS staining is known to work differently depending on many experimental factor
 The cFOS automated count algorithm computes the mean intensity value and the mean standard deviation of each segmented cell in the image, average these two values and compute the z-score (Z)
 
 <p align="center">
-  <img width="163" height="84" src="static/formula_1645614101.jpg">
+  <img width="80" height="42" src="static/formula_1645614101.jpg">
 </p>
 
 
