@@ -873,7 +873,7 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 
 				if (i < optIntSteps) {
 
-					cutOffValues = AutomatedThresholdEstimation(sigma);
+					cutOffValues = AutomatedThresholdEstimation(sigma, nSubregion);
 					intensityCutOff = cutOffValues[0];
 					areaCutOff = cutOffValues[1];
 					//optIntArray[i] = intensityCutOff;

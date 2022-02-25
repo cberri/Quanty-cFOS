@@ -55,9 +55,10 @@ The user can input the range of standard deviations (sigma) to decide the optima
    - *Batch Analysis* and *Optimization Steps* allow to decide how many images will interactively pop up to the user and in case of *cFOS Automated Optimization* (see below), the number of images used to compute the intensity threshold cutoff for cFOS true positive and false positive cells. A recommendation for starting is to leave the box unchecked and proceed to the next step by pressing *OK*
 
 <p align="center">
-  <img width="483" height="334" src="https://github.com/cberri/Quanty-cFOS/blob/main/static/main_setting.png">
+  <img width="483" height="334" src="static/main_setting.png">
 </p>
-   
+
+
 6. The *Input Dialog Box* pops up and the user can specify the input directory with the raw images to process. The input raw images need to have one channel as MIP or z-stacks. In case of a z-stack, the Quanty-cFOS computes the MIP and start the 2D cell segmentation. To test the Quanty-cFOS you can use the sample images provided together with the tool (`\samples`). The *User Input Setting Window* pops up. Please check the *Help* to get familiar with the different options. *Tip*: starting with the default setting can give already decent counts
 
 <p align="center">
