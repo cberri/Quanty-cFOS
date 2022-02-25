@@ -1,12 +1,11 @@
 /* e##########################################################################################################################
- * Project: Semi/Automated 2D cell counting with cFOS staining analysis optimization
+ * Project: Semi/Automated 2D cell counting with cFOS intansity threshold optimization
  * [ Prof Rohini Kuner and Heidelberg Pain Consortium (SFB 1158) ]
  * 
  * Developed by Dr. Carlo A. Beretta 
  * Institute of Pharmacology and Department for Anatomy and Cell Biology @ Heidelberg University
  * Email: 	carlo.beretta@uni-heidelberg.de
  * 			carlo.berri82@googlemail.com
- * Tel.: 	+49 (0) 6221 54 8682
  * 
  * Description: 
  * User can choose different methods to count in 2D positive cells in section.
@@ -16,12 +15,6 @@
  * segment the cell in 2D. In this case only one folder will be the input for the Quanty-cFOS script.
  * With few changes in the code the user can also load a specific model pretrained on his/her data.
  * 
- * TD: 
- * 		1. Run more test and fix bugs
- * 		2. Adjust area cutoff
- * 
- * Created: 2020-04-07
- * Last update: 2021-05-19
  * ##########################################################################################################################
  */
 
@@ -120,7 +113,7 @@ function InputDirectoryRawPM(userOutput) {
 		}
 		
 	}
-	
+
 }
 
 //  # 5
@@ -204,7 +197,7 @@ function UserInput() {
 	Dialog.addNumber("Optimization Steps (N. Images)", optIntSteps);
 	Dialog.addMessage("____________________________________________________________________________");
 	Dialog.addMessage("\n*Quanty-cFOS.ijm tool has been developed for Prof Rohini Kuner's lab members\n and the Heidelberg Pain Consortium (SFB 1158 - https://www.sfb1158.de/)", 11, "#001090");
-	Dialog.addMessage("	 **Last Update: 2021-05-18", 11, "#001090");
+	Dialog.addMessage("	 **Last Update: 2022-02-24", 11, "#001090");
 	
 	// Add Help button
 	html = "<html>"
@@ -284,7 +277,7 @@ function InputDialog(title) {
 			+ " and false positive neurons. cFOS positive cells have a value above the threshold / cFOS false positive cells have a value below the threshold."
 			+ " <b>Uncheck the cFOS optimization boxes if your goal is to count the total number of cells in the images."
 			+ " The batch mode analysis can be use without any optimization step (default)</b><br/><br/></li>"
-			+ "<li><i>Select Multiple Sub-Brain Regions: </i> the user can process many regions in the same input image one-by-one (Not supported for StarDist)<br/><br/></li>" 
+			+ "<li><i>Select Multiple Sub-Brain Regions: </i> the user can process many regions in the same input image one-by-one<br/><br/></li>" 
 			+ "<li><i>Preview Mode: </i> user can visualize the image to threshold, test different threshold methods and measure the area of " 
 			+ "the cells to detect. This information can be use as input for the cells segmentation in the Preview Dialog box (Not supported for StarDist)<br/><br/></li>"
 		+ "</h3> </section>"
@@ -361,10 +354,10 @@ function CheckImageJVersion() {
 	indexFilVersion = lastIndexOf(currentVersion, "/");
 	currentVersion = substring(currentVersion, indexFilVersion+1, lengthOf(currentVersion));
 
-	if (currentVersion > "1.53c") {
+	if (currentVersion == "1.53c") {
 
 		print("ImageJ version [" + currentVersion + "]\t: Not Passed");
-		exit("Update ImageJ, supported version >= 1.53c");
+		exit("Update ImageJ, tested version >= 1.53c");
 
 	} else {
 
@@ -669,11 +662,16 @@ function PreviewSetting() {
 
 // # 6
 // Automated threshold optimization for intensity and cell area
-function AutomatedThresholdEstimation(sigma) {
+function AutomatedThresholdEstimation(sigma, nSubregion) {
 
 	// Compute the mean intensity value for cFOS positive segemneted cells
 	selectImage(titleRaw);
-	run("Median...", "radius=2");
+
+	if (nSubregion == 0) {
+	
+		run("Median...", "radius=2");
+
+	}
 	
 	// ROI Manager length
 	count = roiManager("count");
@@ -865,11 +863,11 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 			// Compute automated mean intensity cutoff value (see batch processing and optimization steps)
 			if (batch == false) {
 
-				cutOffValues = AutomatedThresholdEstimation(sigma);
+				cutOffValues = AutomatedThresholdEstimation(sigma, nSubregion);
 				intensityCutOff = cutOffValues[0];
 				areaCutOff = cutOffValues[1];
-				print("cFOS Optimization - Automated Mean Intensity CutOff:\t" + intensityCutOff + " - Sigma value equal to: " + sigma);
-				print("cFOS Optimization - Automated Area CutOff:\t" + areaCutOff);
+				print("cFOS Optimization_ " + "ROI0-" + nSubregion + " Automated Mean Intensity CutOff:\t" + intensityCutOff + " - Sigma value equal to: " + sigma);
+				print("cFOS Optimization_ " + "ROI0-" + nSubregion + " Automated Area CutOff:\t" + areaCutOff);
 
 			} else if (batch == true) {
 
@@ -908,7 +906,7 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 					//intensityCutOff = AutomatedThresholdEstimation();
 					optIntSteps = optIntSteps - reduceNaN;
 					//print("Intensity CutOff Optimization Ended!" + " It will use value: " + optValue /optIntSteps);
-					print("Batch cFOS Optimization - Automated Mean Intensity CutOff:\t" + optValue /optIntSteps);
+					print("Batch cFOS Optimization_ " + "ROI0-" + nSubregion + " Automated Mean Intensity CutOff:\t" + optValue /optIntSteps);
 					intensityCutOff = optValue /optIntSteps;
 
 					if (i == (optIntSteps + reduceNaN)) {
@@ -920,7 +918,7 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 
 					// Area cutoff
 					//print("Area CutOff Optimization Ended!" + " It will use value: " + optArea /optIntSteps);
-					print("Batch cFOS Optimization - Automated Area CutOff:\t" + optArea /optIntSteps);
+					print("Batch cFOS Optimization_ " + "ROI0-" + nSubregion + " Automated Area CutOff:\t" + optArea /optIntSteps);
 					areaCutOff = optArea /optIntSteps;
 						
 				}
@@ -1050,7 +1048,7 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 				// The automated threshold estimation function is computed to suggest a starting value
 				selectImage(titleRaw);
 				getMinAndMax(min, max); // Use to set the threshold max value
-				cutOffValues = AutomatedThresholdEstimation(sigma);
+				cutOffValues = AutomatedThresholdEstimation(sigma, nSubregion);
 				intensityCutOff = cutOffValues[0];
 				areaCutOff = cutOffValues[1];
 
@@ -1112,8 +1110,8 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 				close(titleRawSelComb);
 	
 				// Print the intensity value entered by the user
-				print("cFOS Optimization - Manual Mean Intensity CutOff:\t" + intensityCutOff);
-				print("cFOS Optimization - Manual Area CutOff:\t" + areaCutOff);
+				print("cFOS Optimization_ " + "ROI0-" + nSubregion + " Manual Mean Intensity CutOff:\t" + intensityCutOff);
+				print("cFOS Optimization_ " + "ROI0-" + nSubregion + "- Manual Area CutOff:\t" + areaCutOff);
 
 			} else if (batch == true) {
 
@@ -1144,7 +1142,7 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 					selectImage(titleRaw);
 					getMinAndMax(min, max); // Use to set the threshold max value
 	
-					cutOffValues = AutomatedThresholdEstimation(sigma);
+					cutOffValues = AutomatedThresholdEstimation(sigma, nSubregion);
 					intensityCutOff = cutOffValues[0];
 					areaCutOff = cutOffValues[1];
 	
@@ -1221,10 +1219,10 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 					
 					//intensityCutOff = AutomatedThresholdEstimation();
 					//print("Intensity CutOff Optimization Ended!" + " It will use value: " + optValue /optIntSteps);
-					print("Batch cFOS Optimization - Automated Mean Intensity CutOff:\t" + optValue /optIntSteps);
+					print("Batch cFOS Optimization_ " + "ROI0-" + nSubregion + " Automated Mean Intensity CutOff:\t" + optValue /optIntSteps);
 					intensityCutOff = optValue /optIntSteps;
 					//print("Area CutOff Optimization Ended!" + " It will use value: " + optArea /optIntSteps);
-					print("Batch cFOS Optimization - Automated Area CutOff:\t" + optArea /optIntSteps);
+					print("Batch cFOS Optimization_ " + "ROI0-" + nSubregion + " Automated Area CutOff:\t" + optArea /optIntSteps);
 					areaCutOff = optArea /optIntSteps;
 					
 				}
@@ -1321,7 +1319,7 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 		if (batch == true) {
 
 			// Min&Max Area Cutoff
-			cutOffValues = AutomatedThresholdEstimation(sigma);		
+			cutOffValues = AutomatedThresholdEstimation(sigma, nSubregion);		
 			areaCutOff = cutOffValues[1];
 			maxCutOff = areaCutOff * 3;
 			minCutOff = areaCutOff / 3;
@@ -1435,7 +1433,7 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 // # 8
 // Use the preprocessed image or run starDist to segment the objects
 // To add: Run on your own pretrained model
-function RunStarDist(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title) {
+function ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title) {
 
 	// Run the 2D StarDist or open the ilastik PM
 	if (usePreProcessedImg == true && runStarDist == false && process2D == true) {
@@ -1479,7 +1477,7 @@ function RunStarDist(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fi
 		// It can be add the option to import the own StarDist model
 		run("Command From Macro", "command=de.csbdresden.stardist.StarDist2D args=['input':'"+ stardistInput +"', 'modelChoice':'Versatile (fluorescent nuclei)', 'normalizeInput':'true', 'percentileBottom':'1.0', 'percentileTop':'99.8', 'probThresh':'0.5', 'nmsThresh':'0.4', 'outputType':'ROI Manager', 'nTiles':'"+ tails +"', 'excludeBoundary':'2', 'roiPosition':'Automatic', 'verbose':'false', 'showCsbdeepProgress':'false', 'showProbAndDist':'false'] process=false");
 		newImage("StarDist", "16-bit black", width, height, slices);
-		rename(title + "SD" + ".tif");
+		rename(title + "_StarDist" + ".tif");
 		titlePreProcess = getTitle();
 		print("StarDist output:\t" + titlePreProcess);
 
@@ -1505,6 +1503,46 @@ function RunStarDist(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fi
 
 	processedImages = newArray(titleRaw, titlePreProcess);
 	return processedImages;
+	
+}
+
+// # 9 Interective session
+function ChoseROI(nSubregion, titleRaw) {
+		
+	// User ROI selection
+	// Deafult tool
+	setTool("polygon");
+
+	// Use for name the region of interest selected by user
+	nSubregion += 1;
+	
+	// Select the input raw image and display it
+	selectImage(inputTitleRaw);
+	setBatchMode("show");
+
+	// [0] and [1]
+	imageShape = ScreenLocation();
+	setLocation(0, 0, imageShape[0], imageShape[1]);
+				
+	// Let the user choose if he/she wants to process a subregion or the entire image
+	waitForUser("Please choose the brain region to process!");
+	
+	// Hide the displied image
+	setBatchMode("hide");
+
+	// Add overlay selection to help the user to identify a new region of interest at the next iteration
+	// Remove selection
+	type = selectionType();
+
+	// Rectangle, Oval, Polygon and Freehand selection are supported
+	if (type == 0 || type == 1 || type == 2 || type == 3) {
+						
+		run("Add Selection...");
+		run("Select None");
+						
+	}
+
+	return nSubregion;
 	
 }
 
@@ -1619,9 +1657,11 @@ macro QuantycFOS {
 		CheckStarDistInstallation();
 
 		dirInRaw = inputPath;
+		dirInPreProcess = inputPath; // Same input path raw images
+
+		// Get file list (same for raw and PM, not need it for StarDist detection)
 		fileListRaw = getFileList(dirInRaw);
 		fileListPreProcess = getFileList(dirInRaw);
-		dirInPreProcess = inputPath;
 		
 	}
 
@@ -1677,7 +1717,7 @@ macro QuantycFOS {
 			inputTitleRaw = getTitle();
 			print("Opening:\t" + inputTitleRaw);
 
-			// TO DO Remove selection if present
+			// Remove selection if present
 			run("Select None");
 
 			// Get input image dimentions
@@ -1691,7 +1731,8 @@ macro QuantycFOS {
             // Remove file extension .tiff / tiff
             dotIndex = lastIndexOf(inputTitleRaw, ".");
             title = substring(inputTitleRaw, 0, dotIndex);
-
+            
+			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// User Input Setting
 			// User can choose to specify the parameters each time or run the same setting on all the input images
 			if (batch == false) {
@@ -1730,16 +1771,7 @@ macro QuantycFOS {
 				sigma = outputDialog[7];
 				
 			}
-
-			// Use the preprocessed image or run StarDist 2D
-			inputTitlePreProcess = "passString";
-			processedImages = RunStarDist(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title);
-			titleRaw = processedImages[0];
-			titlePreProcess = processedImages[1];
-
-			// Function: For now, the input images as to be ONE Channel z-stack or MIP
-			CheckNumberOfCh(titleRaw, titlePreProcess);
-
+			
             // From here minimize the Log Window
 			eval("script","f = WindowManager.getFrame('Log'); f.setLocation(0,0); f.setSize(10,10);");	
 
@@ -1752,6 +1784,7 @@ macro QuantycFOS {
 	
 			}
 
+			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// User can test different threshold methods and measure cell size
 			if (previewMode == true && usePreProcessedImg == true && runStarDist == false) {
 
@@ -1796,59 +1829,81 @@ macro QuantycFOS {
 				
 			}
 
-			// Count positive cells in multiple subregions or use the full image
-			if (processSubRegions == true && usePreProcessedImg == true && runStarDist == false) {
-
-				// Set selectROI to true and preallocate subregion count
-				selectROI = true;
-				nSubregion = 0;
+			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			// Process the all images with 2 input files (raw and ilastik)
+			if (processSubRegions == false && usePreProcessedImg == true && runStarDist == false) {
 				
-				// Repeat the subregion selection until user press "No"
-				while (selectROI == true) {
-		
-					// User ROI selection
-					// Deafult tool
-					setTool("polygon");
+				// 2D Analysis
+				if (process2D == true && process3D == false) {
 
-					// Use for name the region of interest selected by user
-					nSubregion += 1;
-	
-					// Select the input raw image and display it
-					selectImage(titleRaw);
-					setBatchMode("show");
+					// Set selectROI to true and preallocate subregion count
+					nSubregion = 0;
 
-					// [0] and [1]
-					imageShape = ScreenLocation();
-					setLocation(0, 0, imageShape[0], imageShape[1]);
+					// Use the preprocessed image or run StarDist 2D
+					// Preprocessed images are open in this function only if runStarDist is set to false
+					inputTitlePreProcess = "passString";
+					processedImages = ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title);
+					titleRaw = processedImages[0];
+					titlePreProcess = processedImages[1]; // StarDist, titlePreProcess is equal to starDist label image output
+
+					// Function: For now, the input images as to be ONE Channel z-stack or MIP
+					CheckNumberOfCh(titleRaw, titlePreProcess);
 				
-					// Let the user choose if he/she wants to process a subregion or the entire image
-					waitForUser("Please choose the brain region to process!");
-	
-					// Hide the displied image
-					setBatchMode("hide");
-
-					// Add overlay selection to help the user to identify a new region of interest at the next iteration
-					// Remove selection
-					type = selectionType();
-
-					// Rectangle, Oval, Polygon and Freehand selection are supported
-					if (type == 0 || type == 1 || type == 2 || type == 3) {
-						
-						run("Add Selection...");
-						run("Select None");
-						
-					}
-					
 					// Select the preprocessed image for the quantification
 					selectImage(titlePreProcess);
-			
-					// Highlight the ROI
-					run("Duplicate...", "title=Process duplicate");
-					processTitle = getTitle();
-					run("Restore Selection");
 
-					// 2D Analysis
-					if (process2D == true && process3D == false) {
+					// 2D Cell Count
+					reduceNaN = CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, slices, titleRaw, dirOut, dirOutRoot, nSubregion, thresholdType, smallerObjSize, batch, i, optIntArray, optAreaArray, optIntSteps, sigma, reduceNaN);
+
+				// 3D Analysis
+				} else if (process2D == false && process3D == true) {
+
+					// TO BE DONE
+					exit("TO BE DONE!");
+						
+				} else {
+
+					exit("Invalid Input Setting: Please choose Process2D or Process3D (NOT SUPPORTED!)");
+					
+				}
+
+				// Clear the roiManger
+				roiManager("reset");
+
+			// Process ROIs with 2 input files (raw and ilastik)
+			} else if (processSubRegions == true && usePreProcessedImg == true && runStarDist == false && batch == false) {
+
+				// 2D Analysis
+				if (process2D == true && process3D == false) {
+
+					// Set selectROI to true and preallocate subregion count
+					nSubregion = 0;
+					selectROI = true;
+
+					// Use the preprocessed image or run StarDist 2D
+					// Preprocessed images are open in this function only if runStarDist is set to false
+					inputTitlePreProcess = "passString";
+					processedImages = ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title);
+					titleRaw = processedImages[0];
+					titlePreProcess = processedImages[1]; // StarDist, titlePreProcess is equal to starDist label image output
+				
+					// Function: For now, the input images as to be ONE Channel z-stack or MIP
+					CheckNumberOfCh(titleRaw, titlePreProcess);
+
+					// Repeat the subregion selection until user press "No"
+					while (selectROI == true) {
+
+						// Function: User interective session
+						nSubregion = ChoseROI(nSubregion, titleRaw);
+					
+						// Select the preprocessed image for the quantification
+						selectImage(titlePreProcess);
+			
+						// Highlight the ROI
+						run("Duplicate...", "title=Process duplicate");
+						processTitle = getTitle();
+						run("Restore Selection");
+
 
 						// Select the image with the ROI
 						selectImage(processTitle);
@@ -1863,44 +1918,50 @@ macro QuantycFOS {
 						selectImage(processTitle);
 						close(processTitle);
 
-					// 3D Analysis
-					} else if (process2D == false && process3D == true) {
+						// Clear the roiManger
+						roiManager("reset");
 
-						// Could go the 3D count 
+						// Ask the user to select a new ROI
+						selectROI = getBoolean("Do you want to process a different brain area?");
 
-						// Process only the objs. inside the user roi
-						run("Clear Outside", "stack");
+						// Easy to naviagte
+						setTool("hand");
 
-						// TO BE DONE
-						exit("TO BE DONE!");
-						
-					} else {
-
-						exit("Invalid Input Setting!");
-					
 					}
 
-					// Clear the roiManger
-					roiManager("reset");
+				// 3D Analysis
+				} else if (process2D == false && process3D == true) {
 
-					// Ask the user to select a new ROI
-					selectROI = getBoolean("Do you want to process a different brain area?");
+					// TO BE DONE
+					exit("TO BE DONE!");
+						
+				} else {
 
-					// Easy to naviagte
-					setTool("hand");
-	
-				}	
+					exit("Invalid Input Setting: Please choose Process2D or Process3D (NOT SUPPORTED!)");
+					
+				}
 
-			} else if (processSubRegions == false) {
-
-				// Preallocate subregion count
-				nSubregion = 0;
-				
-				// Select the preprocessed image for the quantification
-				selectImage(titlePreProcess);
+			// Process the all images with stardist
+			} else if (processSubRegions == false && usePreProcessedImg == false && runStarDist == true) {
 
 				// 2D Analysis
 				if (process2D == true && process3D == false) {
+
+					// Set selectROI to true and preallocate subregion count
+					nSubregion = 0;
+
+					// Use the preprocessed image or run StarDist 2D
+					// Preprocessed images are open in this function only if runStarDist is set to false
+					inputTitlePreProcess = "passString";
+					processedImages = ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title);
+					titleRaw = processedImages[0];
+					titlePreProcess = processedImages[1]; // StarDist, titlePreProcess is equal to starDist label image output
+				
+					// Function: For now, the input images as to be ONE Channel z-stack or MIP
+					CheckNumberOfCh(titleRaw, titlePreProcess);
+				
+					// Select the preprocessed image for the quantification
+					selectImage(titlePreProcess);
 
 					// 2D Cell Count
 					reduceNaN = CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, slices, titleRaw, dirOut, dirOutRoot, nSubregion, thresholdType, smallerObjSize, batch, i, optIntArray, optAreaArray, optIntSteps, sigma, reduceNaN);
@@ -1913,27 +1974,122 @@ macro QuantycFOS {
 						
 				} else {
 
-					exit("Invalid Input Setting: Please choose Process2D or Process3D!");
+					exit("Invalid Input Setting: Please choose Process2D or Process3D (NOT SUPPORTED!)");
 					
 				}
 
 				// Clear the roiManger
 				roiManager("reset");
 
-			} else if (processSubRegions == true && usePreProcessedImg == false && runStarDist == true) {
+			// Process ROIs with stardist
+			} else if (processSubRegions == true && usePreProcessedImg == false && runStarDist == true && batch == false) {
 
-				// Region selection works is not possible in StarDist mode
-				// This is done because is not computationally efficient
-				print("Processing SubRegions using StarDist is NOT supported");
-				print("Please select before the ROI and run again the Quanty_cFOS tool!");
+				// 2D Analysis
+				if (process2D == true && process3D == false) {
+					
+					// Set selectROI to true and preallocate subregion count
+					nSubregion = 0;
+					selectROI = true;
+
+					// Run stardist on all image and let the user choose the ROI
+					// Solve the problem with fase detection at the border of the selection!
+					if (nSubregion == 0) {
+					
+						inputTitlePreProcess = "passString";
+						processedImages = ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title);
+						titleRaw = processedImages[0];
+						titlePreProcess = processedImages[1]; // StarDist, titlePreProcess is equal to starDist label image output
+					
+						// Function: For now, the input images as to be ONE Channel z-stack or MIP
+						CheckNumberOfCh(titleRaw, titlePreProcess);
+					
+					}
+				
+					// Repeat the subregion selection until user press "No" = false
+					while (selectROI == true) {
+
+						// Function: User interective session
+						nSubregion = ChoseROI(nSubregion, titleRaw);
+
+						// Highlight the ROI
+						selectImage(titlePreProcess);
+						run("Duplicate...", "title=Process duplicate");
+						processTitle = getTitle();
+						run("Restore Selection");
+
+						// Select the image with the ROI
+						selectImage(processTitle);
+
+						// Process only the objs. inside the user roi
+						run("Clear Outside");
+
+						// Clear the roiManger
+						roiManager("reset");
+
+						// Import stardist detected objects in the selected ROI to the roiManger
+						// min+1 to esclude the background (0)
+						getMinAndMax(min, max);
+						for (cc = min+1; cc <=max; cc++) {
+
+							// Use the threshold to select each object in the image
+							setThreshold(cc, cc);
+			
+							// Select the threshold object
+							run("Create Selection");
+													
+							// Measure object properties only if selection exist
+							selectionExist = selectionType();
+	
+							if (selectionExist != -1) {
+
+								roiManager("Add");
+		
+							}
+
+						}
+
+						// 2D Cell Count
+						reduceNaN = CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, slices, titleRaw, dirOut, dirOutRoot, nSubregion, thresholdType, smallerObjSize, batch, i, optIntArray, optAreaArray, optIntSteps, sigma, reduceNaN);
+
+						// Close the image use for the counting
+						selectImage(processTitle);
+						close(processTitle);
+
+						// Clear the roiManger
+						roiManager("reset");
+
+						// Ask the user to select a new ROI
+						selectROI = getBoolean("Do you want to process a different brain area?");
+
+						// Easy to naviagte
+						setTool("hand");
+
+					}
+
+				// 3D Analysis
+				} else if (process2D == false && process3D == true) {
+
+					// TO BE DONE
+					exit("TO BE DONE!");
+						
+				} else {
+
+					exit("Invalid Input Setting: Please choose Process2D or Process3D (NOT SUPPORTED!)");
+					
+				}
+				
+			} else {
+
+				exit("Uncheck batch box if you plan to select specific brain regions!")
+
 				
 			}
-
-		// Close all the open images
-		selectImage(titleRaw);
-		close(titleRaw);
-		selectImage(titlePreProcess);
-		close(titlePreProcess);
+			
+			// Close all the open images
+			selectImage(titleRaw);
+			close(titleRaw);
+			selectImage(titlePreProcess);
+			close(titlePreProcess);
 			
 		} else {
 
