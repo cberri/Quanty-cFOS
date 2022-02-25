@@ -1737,7 +1737,7 @@ macro QuantycFOS {
 			// User can choose to specify the parameters each time or run the same setting on all the input images
 			if (batch == false) {
 				
-            	outputDialog = InputDialog(title);
+				outputDialog = InputDialog(title);
 				roiName = outputDialog[0];
 				process2D = outputDialog[1]; 
 				process3D = outputDialog[2]; 
@@ -1772,10 +1772,10 @@ macro QuantycFOS {
 				
 			}
 			
-            // From here minimize the Log Window
+			// From here minimize the Log Window
 			eval("script","f = WindowManager.getFrame('Log'); f.setLocation(0,0); f.setSize(10,10);");	
 
-            // Check if the output directory already exists
+			// Check if the output directory already exists
 			if (File.exists(dirOutRoot)) {
 						
 				// Create the image and the analysis output directory inside the output root directory
