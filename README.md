@@ -4,7 +4,7 @@
   <img width="924" height="412" src="static/cover.jpg">
 </p
 
-The *Quanty-cFOS.ijm* is a flexible and reproducible ImageJ/Fiji tool to count cFOS labelled cells or more generally to count any cell maker in 2D fluorescent images or on Maximum Intensity Projections (MIP). For flexibility reasons this tool is implemented as a macro-set (IJ1) for Image/Fiji (version 1.53c and above)
+The *Quanty-cFOS.ijm* is a flexible and reproducible ImageJ/Fiji tool to count cFOS labelled cells or more generally to count any cell marker in 2D fluorescent images or on Maximum Intensity Projections (MIP). For flexibility reasons this tool is implemented as a macro-set (IJ1) for Image/Fiji (version 1.53c and above)
 
 The Quanty-cFOS tool uses two different cell detection methods:
 
@@ -46,7 +46,7 @@ The user can input the range of standard deviations (sigma) to decide the optima
 
    `git clone https://github.com/cberri/Quanty-cFOS.git`
 
-2. Drag and drop on the ImageJ/Fiji main window the *Quanty-cFOS.ijm* file (OPTIONAL: you can also copy the file in the ImageJ/Fiji plugin directory and run the tool using the ImageJ/Fiji GUI)
+2. Drag and drop on the ImageJ/Fiji main window the *Quanty-cFOS.ijm* file. You can also copy the file in the ImageJ/Fiji plugin directory and run the tool using the ImageJ/Fiji GUI (e.g.: `C:\Users\XXX\XXX\XXX\fiji-win64\Fiji.app\plugins`). Please, restart ImageJ/Fiji after this operation
 
 3. The ImageJ/Fiji *Macro Interpreter* window opens
 
@@ -80,10 +80,10 @@ The user can input the range of standard deviations (sigma) to decide the optima
    - A *csv* file with the Center of Mass of each detected cell (X, Y, ID, State)
 
 
-   - A labeled image that displays in yellow the cFOS true positive cells (ID 255) and in purple the cFOS false positive cells (ID 50)
+      - A labeled image that displays in yellow the cFOS true positive cells (ID 255) and in purple the cFOS false positive cells (ID 50)
 
 
-   - The roiManager ROIs with cFOS true positive cells highlighted (see User Input Setting *RoiManager ROIs Tag* function in the Help)
+      - The roiManager ROIs with cFOS true positive cells highlighted (see User Input Setting *RoiManager ROIs Tag* function in the Help)
 
 10. The summary counts are saved in the main directory in the *SummaryMeasurements.cs*v file (tab separator) and the *Log.txt* file contains the user settings used for the analysis
 
@@ -92,20 +92,14 @@ The user can input the range of standard deviations (sigma) to decide the optima
 ## Step-by-step Quanty-cFOS Analysis with ilastik Pixel Classification Workflow
 
 1. Open ilastik and create an ilastik pixel classification project. Read the ilastik documentation to learn more https://www.ilastik.org/documentation/pixelclassification/pixelclassification
-
 2. In the ilastik *Export Settings* choose as source *Probabilities*. Click on *Choose Export Image Settings..*. and follow the ilastik documentation to export the probability map of the foreground class (label). It is recommended to convert the data to the same bit depth of the raw images (typically unsigned 8 bits) and check the box *Renormalize [min,max] from*. The input file format for the ilastik probability map images in Quanty-cFOS is tiff. The ilastik output file format can be specified in the *Output File Info* menu. If you choose *HDF5* (strongly recommended for large images) the images can be converted in tiff using the ilastik ImageJ/Fiji plugin (Import HDF5 and save as multipage tiff). More information can be also found here: https://www.ilastik.org/documentation/fiji_export/plugin
-
 3. Open ImageJ/Fiji and run the *Quanty-cFOS.ijm* tool
-
 4. The Quanty-cFOS *Main Setting Window* pops up and the user can decide the detection method. The ilastik option is the default (*Use Pre-Processed Image*). We have tested ilastik pixel classification but any preprocessing or enhancing method could be suitable
-
 5. Click *Run*
-
 6. The *User Input Setting Window* pops up, the user can choose the raw images input directory and click *OK*. By choosing the ilastik detection method a second dialog box pop up and the user can specify the ilastik probability map input directory. It is very important that the raw and the probability map images have a similar file name and the number of files must be the same in the two input directories
-
 7. The process continues as described for Quanty-cFOS with StarDist
 
-   
+
 
 ## Quanty-cFOS: *cFOS Manual Optimization*
 
@@ -115,10 +109,12 @@ A crucial step in the automated cFOS counts is the intensity threshold value use
 
 ## Quanty-cFOS: Cell Batch Count without *cFOS Optimization*
 
-All cell counts are possible and can be achieved by unchecking the *cFOS Automated Optimization* and the *cFOS Manual Optimization*. In this way all the cells in the image are counted without an intensity threshold cutoff optimization. Only a size cutoff filter (based on cell area) is applied using 3 folds below and above the area standard deviation of the cells in the image. This option is supported only with *Batch Analysis* option and it doesn't use any *Optimization Steps* (process all the images in the input directory one-by-one)
+All cell counts are possible and can be achieved by unchecking the *cFOS Automated Optimization* and the *cFOS Manual Optimization*. In this way all the cells in the image are counted without an intensity threshold cutoff optimization. Only a size cutoff filter (based on cell area) is applied using 3 folds below and above the mean area of cells in the image. This option is supported only with *Batch Analysis* option and it doesn't use any *Optimization Steps* (process all the images in the input directory one-by-one)
 
 
 
-### Additional options
+### <u>Additional features</u>
 
 Select *Multiple Sub-Brain Region* has been added to allow users to select specific region of interest in the input images. The user need to run the Quanty-cFOS tool without *batch mode* option and choose as many ROIs as needed to be analyzed. This option works for both detection methods, StarDist and ilastik pixel classification
+
+Select *Allow Preview User Setting* to preview the intensity threshold and area cutoff for the ilastik probability map (simple method)

@@ -13,7 +13,7 @@
  * a specified amount of images and use these values as cutoff to decide positive and false positive cFOS cells. 
  * User can specify two input folders with the raw images and the pre-processed images or use the 2D StarDist Versatile (fluorescent nuclei) model to 
  * segment the cell in 2D. In this case only one folder will be the input for the Quanty-cFOS script.
- * With few changes in the code the user can also load a specific model pretrained on his/her data.
+ * With few changes in the code the user can also load a specific model pretrained on his/her own data.
  * 
  * ##########################################################################################################################
  */
@@ -116,7 +116,7 @@ function InputDirectoryRawPM(userOutput) {
 
 }
 
-//  # 5
+//  # 5a
 // Output directory
 function OutputDirectory(outputPath, year, month, dayOfMonth, second) {
 
@@ -142,6 +142,56 @@ function OutputDirectory(outputPath, year, month, dayOfMonth, second) {
 	// Use the new string as a path to create the OUTPUT directory.
 	dirOutRoot = dirOutRoot + "MacroResults_" + year + "-" + (month+1) + "-" + dayOfMonth + "_0" + second + File.separator;
 	return dirOutRoot;
+	
+}
+
+// # 5b
+// We additional save the labeled images in a common directory to facilitate further processing
+function GroupLableImages(dirOutRoot, title, i, batch) {
+	
+	if (batch == false) {
+		
+		// Check if the output directory already exists
+		if (File.exists(dirOutRoot)) {
+						
+			// Create the image and the analysis output directory inside the output root directory
+			dirOut = dirOutRoot + "0" + (i+1) + "_" + title + File.separator;
+			File.makeDirectory(dirOut);
+	
+		}
+		
+		dirOutLabels = "";
+		saveImages = newArray(dirOutRoot, dirOut, dirOutLabels);
+		
+	} else if (batch == true) {
+		
+		// Check if the output directory already exists
+		if (File.exists(dirOutRoot)) {
+			
+			if (i == 0) {
+				
+				// Create the image and the analysis output directory inside the output root directory
+				dirOutLabels = dirOutRoot + "LabeledImages" + File.separator;
+				File.makeDirectory(dirOutLabels);
+				
+				// Create the image and the analysis output directory inside the output root directory
+				dirOut = dirOutRoot + "0" + (i+1) + "_" + title + File.separator;
+				File.makeDirectory(dirOut);
+				
+			} else {
+				
+				// Create the image and the analysis output directory inside the output root directory
+				dirOut = dirOutRoot + "0" + (i+1) + "_" + title + File.separator;
+				File.makeDirectory(dirOut);
+				
+			}
+	
+		}
+		
+		saveImages = newArray(dirOutRoot, dirOut, dirOutLabels);
+	}
+	
+	return saveImages;
 	
 }
 
@@ -197,7 +247,7 @@ function UserInput() {
 	Dialog.addNumber("Optimization Steps (N. Images)", optIntSteps);
 	Dialog.addMessage("____________________________________________________________________________");
 	Dialog.addMessage("\n*Quanty-cFOS.ijm tool has been developed for Prof Rohini Kuner's lab members\n and the Heidelberg Pain Consortium (SFB 1158 - https://www.sfb1158.de/)", 11, "#001090");
-	Dialog.addMessage("	 **Last Update: 2022-02-24", 11, "#001090");
+	Dialog.addMessage("	 **Last Update: 2022-02-28", 11, "#001090");
 	
 	// Add Help button
 	html = "<html>"
@@ -207,7 +257,7 @@ function UserInput() {
 		+ "<b> Options:</b>" 
 			+ "<li><i>Pre-processed Images</i>: [INPUT] Choose the input folder with the raw images and the input folder with the pre-processed images (e.g.: <a href=https://www.ilastik.org/documentation/pixelclassification/pixelclassification>ilastik pixel classification</a>)<br/><br/></li>"
 			+ "<li><i>Run <a href=https://imagej.net/StarDist> StarDist 2D</a></i>: [INPUT] Choose the input folder with the raw data! The pre-trained StarDist 2D model will be use to generate the labels image."
-			+ " Increase the <b> StarDist Tails Number </b> in case of out-of-memory errors. <i><b>NB:</i></b> High is the number of tails slower is the process! <br/><br/></li>"
+			+ " Increase the <b> StarDist Tails Number </b> in case of out-of-memory errors. <i><b>NB:</i></b> Higher the number of tails slower is the process! <br/><br/></li>"
 			+ "<li><i>Batch Analysis</i>: User can decide to process the input images one-by-one with a specific setting or process the input images using the same setting <br/><br/></li>"
 			+ "<li><i>Optimization Steps</i>: Number of images that the user wants to process semi-automatically or in case of cFOS counting used to compute the optimized threshold value."
 			+ " NB: The user should exclude these images from the final cFOS counting or reprocess the images using the optimized threshold. Check the LOG file to find the value used<br/><br/></li>"
@@ -268,8 +318,8 @@ function InputDialog(title) {
 		+ "<h3> <section>" 
 		+ "<b> User Input Setting:</b>" 
 			+ "<li><i>Image Tag: </i> any useful information that can be used to name the ROIs in the RoiManger for the positive cells<br/><br/></li>"
-			+ "<li><i>Process2D: </i> the quantification is done on the Maximum Intensity Projection<br/><br/></li>" 
-			+ "<li><i>(Not implemented) Process3D: </i> the quantification is done in 3D (volxel based)<br/><br/></li>" 
+			+ "<li><i>2D Analysis: </i> the quantification is done on the Maximum Intensity Projection<br/><br/></li>" 
+			+ "<li><i>(Not implemented) 3D Analysis: </i> the quantification is done in 3D (volxel based)<br/><br/></li>" 
 			+ "<li><i>cFOS Automated Optimization</i> <b>(&#8721; MeanIntensity / nROIs)</b>: compute the mean intensity value and the standard deviation of all ROIs."
 			+ " <b>[Assumption Normal Distribution]<b/> the zScore <b>(z = &#x3C7; - &#x3BC; / &#x3C3;)</b> is computed for each ROI and used to classify cFOS positive and false positive neurons."
 			+ " The sigma can be changed to increase or decrease the mean intensity cutoff [e.g.: 3]. This is still under testing, please be careful and validate the counting results with ground truth data.<br/><br/></li>"
@@ -347,28 +397,6 @@ function PlotOptimizationValueInt(optIntArray, intensityCutOff, optIntSteps, red
 }
 
 // # 11
-// Check ImageJ version
-function CheckImageJVersion() {
-
-	currentVersion = getVersion();
-	indexFilVersion = lastIndexOf(currentVersion, "/");
-	currentVersion = substring(currentVersion, indexFilVersion+1, lengthOf(currentVersion));
-
-	if (currentVersion == "1.53c") {
-
-		print("ImageJ version [" + currentVersion + "]\t: Not Passed");
-		exit("Update ImageJ, tested version >= 1.53c");
-
-	} else {
-
-		print("ImageJ version:[" + currentVersion + "]\t: Passed");
-		wait(3000);
-
-	}
-
-}
-
-// # 12
 // Check input image bit depth
 // It is supported only 8 bit raw images
 // User can edit this part and process images with different bit depth but without any warranty (never tested)
@@ -818,8 +846,12 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 
 	// Threshold the image in case the user chose ilastikPM
 	if (userOutput[0] == true && userOutput[1] == false) {
+		
+		// Remove ROIs
+		run("Select None");
 
-		// Convert into binary
+		// HERE WE COULD USE SOMTHING MORE ACCURATE
+		// Simple thresholding of the ilastik probability map to generate a binary image
 		setAutoThreshold(thresholdType + " dark");
 		setOption("BlackBackground", true);
 		run("Convert to Mask");
@@ -835,12 +867,16 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 		roiManager("Show All");
 		roiManager("Fill");
 
-		// Threshold PM or starDist image
+		// Threshold ilatik PM for cFOS analysis
 		selectedTitle = getTitle();
 		selectImage(selectedTitle);
 
 	} else if (userOutput[0] == false && userOutput[1] == true) {
-
+		
+		// Remove ROIs
+		run("Select None");
+		
+		// StarDist input for cFOS analysis
 		run("Duplicate...", "title=stardistRunningImage");
 		selectedTitle = getTitle();
 		selectImage(selectedTitle);
@@ -981,10 +1017,23 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 			roiManager("show none");
 			run("mpl-inferno");
 
-			// Save and close the statistic image
-			saveAs("Tiff", dirOut + "DisplayCellCount_" + title + "_ROI_0" + nSubregion);
-			selectedTitle = getTitle();
-			close(selectedTitle);
+			// Save and close the labeled image
+			if (batch == true) {
+				
+				saveAs("Tiff", dirOut + "DisplayCellCount_" + title + "_ROI_0" + nSubregion);
+				selectedTitle = getTitle();
+				
+				saveAs("Tiff", dirOutLabels + "DisplayCellCount_" + title + "_ROI_0" + nSubregion);
+				selectedTitle = getTitle();
+				close(selectedTitle);
+				
+			} else {
+				
+				saveAs("Tiff", dirOut + "DisplayCellCount_" + title + "_ROI_0" + nSubregion);
+				selectedTitle = getTitle();
+				close(selectedTitle);
+				
+			}
 
 			// Save the roiManger
 			roiManager("Sort");
@@ -1287,10 +1336,23 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 			roiManager("show none");
 			run("mpl-inferno");
 
-			// Save and close the statistic image
-			saveAs("Tiff", dirOut + "DisplayCellCount_" + title + "_ROI_0" + nSubregion);
-			selectedTitle = getTitle();
-			close(selectedTitle);
+			// Save and close the labeled image
+			if (batch == true) {
+				
+				saveAs("Tiff", dirOut + "DisplayCellCount_" + title + "_ROI_0" + nSubregion);
+				selectedTitle = getTitle();
+				
+				saveAs("Tiff", dirOutLabels + "DisplayCellCount_" + title + "_ROI_0" + nSubregion);
+				selectedTitle = getTitle();
+				close(selectedTitle);
+				
+			} else {
+				
+				saveAs("Tiff", dirOut + "DisplayCellCount_" + title + "_ROI_0" + nSubregion);
+				selectedTitle = getTitle();
+				close(selectedTitle);
+				
+			}
 
 			// Save the roiManger
 			roiManager("Sort");
@@ -1314,19 +1376,30 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 		
 	// # Condition 3
 	// This can be used to count all the detected objects in an image without intensty threshold cutoff
+	// Only area mean cutoff is used
 	} else if (cFOS == false && usercFOSThreshold == false) { 
 
 		if (batch == true) {
 
-			// Min&Max Area Cutoff
-			cutOffValues = AutomatedThresholdEstimation(sigma, nSubregion);		
-			areaCutOff = cutOffValues[1];
-			maxCutOff = areaCutOff * 3;
-			minCutOff = areaCutOff / 3;
-
 			// Initialize variable
-			count = 0;
-
+			sumArea = 0;
+			
+			for (pp = 0; pp < roiManager("count"); pp++) {
+				
+				// Select each ROI in the roiManager
+				selectImage(titleRaw);
+				roiManager("select", pp);
+	
+				// Measure the mean intensity in the ROI
+				sumArea += getValue("Area");
+				
+			}
+			
+			areaCutOff = sumArea / roiManager("count");
+			maxCutOff = areaCutOff *3;
+			minCutOff = areaCutOff /3;
+			
+			// Cutoff area
 			for (jj = 0; jj < roiManager("count"); jj++) {
 
 				// Select each ROI in the roiManager
@@ -1350,7 +1423,7 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 					roiManager("select", jj);
 
 					// Set the value for the false positive to 50
-					run("Set...", "value=50");
+					run("Set...", "value=0");
 
 				} else if (getMeanAreaValue <= maxCutOff || getMeanAreaValue >= minCutOff) {
 
@@ -1364,10 +1437,10 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 					roiManager("select", jj);
 
 					// Set the value for the positive cell to 255 and give a unique file name tag (usefull for the user later on)
-					run("Set...", "value=255");
+					run("Set...", "value=["+(jj+1)+"]");
 					roiManager("rename", "Count_" + jj)
 
-					// Count the positive cFOS Neurons
+					// Count the cell within the area cutoff
 					count += 1;
 				
 			}	
@@ -1388,10 +1461,23 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 				roiManager("show none");
 				run("mpl-inferno");
 
-				// Save and close the statistic image
-				saveAs("Tiff", dirOut + "DisplayCellCount_" + title + "_ROI_0" + nSubregion);
-				selectedTitle = getTitle();
-				close(selectedTitle);
+				// Save and close the labeled image
+				if (batch == true) {
+				
+					saveAs("Tiff", dirOut + "DisplayCellCount_" + title + "_ROI_0" + nSubregion);
+					selectedTitle = getTitle();
+				
+					saveAs("Tiff", dirOutLabels + "DisplayCellCount_" + title + "_ROI_0" + nSubregion);
+					selectedTitle = getTitle();
+					close(selectedTitle);
+				
+				} else {
+				
+					saveAs("Tiff", dirOut + "DisplayCellCount_" + title + "_ROI_0" + nSubregion);
+					selectedTitle = getTitle();
+					close(selectedTitle);
+				
+				}
 
 				// Save the roiManger
 				roiManager("Save", dirOut + title + "_ROI_0" + nSubregion + ".zip");
@@ -1435,7 +1521,7 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 // To add: Run on your own pretrained model
 function ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title) {
 
-	// Run the 2D StarDist or open the ilastik PM
+	// Open the ilastik PM or run StarDist pretrained model in 2D
 	if (usePreProcessedImg == true && runStarDist == false && process2D == true) {
 				
 		// Open the input PM image
@@ -1483,7 +1569,8 @@ function ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPrePro
 
 		// Create the output label image from the roiManager
 		for (k = 0; k < roiManager("count"); k++) {
-
+			
+			selectImage(titlePreProcess);
 			roiManager("select", k);
 			run("Set...", "value=["+(k+1)+"]");
 	
@@ -1512,6 +1599,7 @@ function ChoseROI(nSubregion, titleRaw) {
 	// User ROI selection
 	// Deafult tool
 	setTool("polygon");
+	roiManager("reset");
 
 	// Use for name the region of interest selected by user
 	nSubregion += 1;
@@ -1536,12 +1624,12 @@ function ChoseROI(nSubregion, titleRaw) {
 
 	// Rectangle, Oval, Polygon and Freehand selection are supported
 	if (type == 0 || type == 1 || type == 2 || type == 3) {
-						
-		run("Add Selection...");
+		
+		run("Draw", "slice");
 		run("Select None");
 						
 	}
-
+	
 	return nSubregion;
 	
 }
@@ -1621,9 +1709,6 @@ macro QuantycFOS {
 	
 	// 2.
 	CloseAllWindows();
-
-	// 3.
-	CheckImageJVersion();
 
 	// Display memory usage
 	// doCommand("Monitor Memory...");
@@ -1773,8 +1858,15 @@ macro QuantycFOS {
 			}
 			
 			// From here minimize the Log Window
-			eval("script","f = WindowManager.getFrame('Log'); f.setLocation(0,0); f.setSize(10,10);");	
-
+			eval("script","f = WindowManager.getFrame('Log'); f.setLocation(0,0); f.setSize(10,10);");
+			
+			// Create the output directories
+			saveImages = GroupLableImages(dirOutRoot, title, i, batch);
+			dirOutRoot = saveImages[0];
+			dirOut = saveImages[1];
+			dirOutLabels = saveImages[2];
+			
+			/* Replaced by the function above
 			// Check if the output directory already exists
 			if (File.exists(dirOutRoot)) {
 						
@@ -1783,6 +1875,7 @@ macro QuantycFOS {
 				File.makeDirectory(dirOut);
 	
 			}
+			*/
 
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// User can test different threshold methods and measure cell size
@@ -1904,10 +1997,6 @@ macro QuantycFOS {
 						processTitle = getTitle();
 						run("Restore Selection");
 
-
-						// Select the image with the ROI
-						selectImage(processTitle);
-
 						// Process only the objs. inside the user roi
 						run("Clear Outside");
 
@@ -2016,15 +2105,9 @@ macro QuantycFOS {
 						run("Duplicate...", "title=Process duplicate");
 						processTitle = getTitle();
 						run("Restore Selection");
-
-						// Select the image with the ROI
-						selectImage(processTitle);
-
+						
 						// Process only the objs. inside the user roi
 						run("Clear Outside");
-
-						// Clear the roiManger
-						roiManager("reset");
 
 						// Import stardist detected objects in the selected ROI to the roiManger
 						// min+1 to esclude the background (0)
@@ -2033,16 +2116,17 @@ macro QuantycFOS {
 
 							// Use the threshold to select each object in the image
 							setThreshold(cc, cc);
-			
+							
 							// Select the threshold object
 							run("Create Selection");
-													
+			
 							// Measure object properties only if selection exist
 							selectionExist = selectionType();
 	
 							if (selectionExist != -1) {
 
 								roiManager("Add");
+								roiManager("deselect");
 		
 							}
 
@@ -2054,7 +2138,7 @@ macro QuantycFOS {
 						// Close the image use for the counting
 						selectImage(processTitle);
 						close(processTitle);
-
+						
 						// Clear the roiManger
 						roiManager("reset");
 
@@ -2080,8 +2164,7 @@ macro QuantycFOS {
 				
 			} else {
 
-				exit("Uncheck batch box if you plan to select specific brain regions!")
-
+				exit("Batch function is not supported with brain region selection!\nUncheck batch box if you plan to select specific brain regions!")
 				
 			}
 			
