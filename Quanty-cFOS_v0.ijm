@@ -146,7 +146,7 @@ function OutputDirectory(outputPath, year, month, dayOfMonth, second) {
 }
 
 // # 5b
-// We additional save the labeled images in a common directory to facilitate further processing
+// When bacth is enabled we additional save the labeled images in a common directory to facilitate further processing
 function GroupLableImages(dirOutRoot, title, i, batch) {
 	
 	if (batch == false) {
@@ -274,6 +274,37 @@ function UserInput() {
 	batch = Dialog.getCheckbox();
 	optIntSteps = Dialog.getNumber();
 
+	// Uncheck the Pre-Processing method in case the user select StarDist detection
+	if (ilastikPM == true && starDist == true) {
+
+		ilastikPM = false;
+		starDist = true;
+
+		showMessage("Warning", "<html>"
+			+ "<style> html, body { width: 600; height: 80; margin: 5; padding: 0; background-color: #ECF1F4; }"
+			+"<h4><br><font size=+0.5><font color=red>&#x1F6AB INVALID INPUT SETTINGS</font color></font size></br></h4>"
+     		+"<br>You choose to run <b><i>Pre-Processed Images & Run StarDist 2D</b></i></br>"
+     		+"<br>> Running <b><i>StarDist 2D (Versatile -Fluorescent Nuclei)</b></i></br>"
+     		+ "</style>"	
+     		+"</html>");
+		
+	}
+
+	// Check if the user set the optimization step to zero (NOT VALIDE CHOICE)
+	if (optIntSteps == 0) {
+		
+		setOptStep = optIntSteps;
+		optIntSteps = 1;
+
+		showMessage("Warning", "<html>"
+			+ "<style> html, body { width: 600; height: 80; margin: 5; padding: 0; background-color: #ECF1F4; }"
+			+"<h4><br><font size=+0.5><font color=red>&#x1F6AB INVALID INPUT SETTINGS</font color></font size></br></h4>"
+     		+"<br>The number of Optimization Steps must be <b><i>>= 1</b></i></br>"
+     		+"<br>> Setting step size to <b><i>1</b></i></br>"
+     		+ "</style>"	
+     		+"</html>");
+	}
+
 	userOutput = newArray(ilastikPM, starDist, tails, batch, optIntSteps);
 	return userOutput;
 	
@@ -309,7 +340,7 @@ function InputDialog(title) {
 
 	Dialog.addCheckbox("Select Multiple Sub-Brain Regions", processSubRegions);
 	Dialog.addToSameRow();
-	Dialog.addCheckbox("Allow Preview User Setting", previewMode);
+	Dialog.addCheckbox("Allow Preview User Setting (Raw & Pre-Processed Input)", previewMode);
 	
 	// Add Help button
 	html = "<html>"
@@ -345,6 +376,23 @@ function InputDialog(title) {
 	usercFOSThreshold = Dialog.getCheckbox();
 	processSubRegions = Dialog.getCheckbox();
 	previewMode = Dialog.getCheckbox();
+
+	// Uncheck the automated method in case the user select the manual method
+	// This is in case the user wants to processed the images manualy and forget to uncheck the automated method
+	if (cFOS == true && usercFOSThreshold == true) {
+
+		cFOS = false;
+		usercFOSThreshold = true;
+		
+		showMessage("Warning", "<html>"
+			+ "<style> html, body { width: 600; height: 80; margin: 5; padding: 0; background-color: #ECF1F4; }"
+			+"<h4><br><font size=+0.5><font color=red>&#x1F6AB INVALID INPUT SETTINGS</font color></font size></br></h4>"
+     		+"<br>You choose to run <b><i>cFos Automated Optimization & Manual Optimization</b></i></br>"
+     		+"<br>> Running <b><i>cFOS Manual Optimization</b></i></br>"
+     		+ "</style>"	
+     		+"</html>");
+     			
+	}
 	
 	outputDialog = newArray(roiName, process2D, process3D, cFOS, usercFOSThreshold, processSubRegions, previewMode, sigma);
 	return outputDialog;
@@ -365,13 +413,16 @@ function CheckStarDistInstallation() {
        
     } else {
     	
-		print("Before to start to use the Quanty-cFOS tool you need to install the StarDist 2D and CSBDeep plugins!");
-		wait(3000);
-		print("1. Select Help >> Update... from the menu to start the updater");
-		print("2. Click on Manage update sites. This brings up a dialog where you can activate additional update sites");
-		print("3. Check the StarDist and the CSBDeep checkboxes and close the dialog. Now you should see additional jar file ready to be installed");
-		print("4. Click Apply changes and restart ImageJ");
-		print("5. After restarting ImageJ you should be able to run this macro with StarDist 2D enabled option");
+	showMessage("Warning", "<html>"
+		+ "<style> html, body { width: 800; height: 80; margin: 5; padding: 0; background-color: #ECF1F4; }"
+		+"<h4><br><font size=+0.5>&#x1F6E0 Before to start to use the Quanty-cFOS tool you need to install the <i>StarDist 2D</i> and <i>CSBDeep plugins</i></font size></br></h4>"
+     	+"<br><li>Select <i>Help >> Update...</i> from the main ImageJ/Fiji window to start the updater</li></br>"
+     	+"<br><li>Click on <i>Manage update sites</i> This brings up a dialog menu where you can activate additional update sites</li></br>"
+     	+"<br><li>Check the <i>StarDist</i> and the <i>CSBDeep</i> checkboxes and close the dialog. Now you should see additional .jar file ready to be installed</li></br>"
+     	+"<br><li>Click <i>Apply changes</i> and restart ImageJ/Fiji</li></br>"
+     	+"<br><li>After restarting ImageJ/Fiji you should be able to run the Quanty-cFOS with StarDist 2D option enabled</li></br>"
+     	+ "</style>"	
+     	+"</html>");
 		exit();
     	
     }
@@ -1519,10 +1570,10 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 // # 8
 // Use the preprocessed image or run starDist to segment the objects
 // To add: Run on your own pretrained model
-function ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title) {
+function ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title, previewMode) {
 
 	// Open the ilastik PM or run StarDist pretrained model in 2D
-	if (usePreProcessedImg == true && runStarDist == false && process2D == true) {
+	if (usePreProcessedImg == true && runStarDist == false && process2D == true && previewMode == false) {
 				
 		// Open the input PM image
 		open(dirInPreProcess + fileListPreProcess[i]);
@@ -1704,14 +1755,8 @@ function CloseMemoryWindow() {
 macro QuantycFOS {
 
 	// StartUp functions
-	// 1.
 	Setting();
-	
-	// 2.
 	CloseAllWindows();
-
-	// Display memory usage
-	// doCommand("Monitor Memory...");
 
 	// Get the starting time
 	getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
@@ -1719,7 +1764,7 @@ macro QuantycFOS {
 	// Let user choose what type of inputs want to use
 	userOutput = UserInput();
 
-	// 4. Function choose the input root directory
+	// Choose the input root directory
 	inputPath = InputDirectoryRawPM(userOutput);
 	usePreProcessedImg = userOutput[0];
 	runStarDist = userOutput[1];
@@ -1768,7 +1813,7 @@ macro QuantycFOS {
 	// Use the raw input path as output path
 	outputPath = dirInRaw;
 
-	// 5. Create the output root directory in the input path
+	// Create the output root directory in the input path
 	dirOutRoot = OutputDirectory(outputPath, year, month, dayOfMonth, second);
 
 	if (!File.exists(dirOutRoot)) {	
@@ -1779,7 +1824,7 @@ macro QuantycFOS {
 	
 	} 
 
-	// 6.
+	// Open the roiManager
 	OpenROIsManager();
 
 	// Do not display the images
@@ -1881,6 +1926,16 @@ macro QuantycFOS {
 			// User can test different threshold methods and measure cell size
 			if (previewMode == true && usePreProcessedImg == true && runStarDist == false) {
 
+				// Open the input PM image
+				open(dirInPreProcess + fileListPreProcess[i]);
+				inputTitlePreProcess = getTitle();
+				print("Opening:\t" + inputTitlePreProcess);
+
+				// Function: Compute the MIP in case the input image is a z-stack
+        		inputTitle = ComputeStack(inputTitleRaw, inputTitlePreProcess, process2D, process3D);
+        		titleRaw = inputTitle[0];
+        		titlePreProcess = inputTitle[1];
+
 				// Show the image
 				setBatchMode("show");
 
@@ -1935,7 +1990,7 @@ macro QuantycFOS {
 					// Use the preprocessed image or run StarDist 2D
 					// Preprocessed images are open in this function only if runStarDist is set to false
 					inputTitlePreProcess = "passString";
-					processedImages = ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title);
+					processedImages = ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title, previewMode);
 					titleRaw = processedImages[0];
 					titlePreProcess = processedImages[1]; // StarDist, titlePreProcess is equal to starDist label image output
 
@@ -1976,7 +2031,7 @@ macro QuantycFOS {
 					// Use the preprocessed image or run StarDist 2D
 					// Preprocessed images are open in this function only if runStarDist is set to false
 					inputTitlePreProcess = "passString";
-					processedImages = ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title);
+					processedImages = ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title, previewMode);
 					titleRaw = processedImages[0];
 					titlePreProcess = processedImages[1]; // StarDist, titlePreProcess is equal to starDist label image output
 				
@@ -2042,7 +2097,7 @@ macro QuantycFOS {
 					// Use the preprocessed image or run StarDist 2D
 					// Preprocessed images are open in this function only if runStarDist is set to false
 					inputTitlePreProcess = "passString";
-					processedImages = ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title);
+					processedImages = ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title, previewMode);
 					titleRaw = processedImages[0];
 					titlePreProcess = processedImages[1]; // StarDist, titlePreProcess is equal to starDist label image output
 				
@@ -2085,7 +2140,7 @@ macro QuantycFOS {
 					if (nSubregion == 0) {
 					
 						inputTitlePreProcess = "passString";
-						processedImages = ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title);
+						processedImages = ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPreProcess, fileListPreProcess, i, inputTitleRaw, inputTitlePreProcess, process2D, process3D, width, height, slices, title, previewMode);
 						titleRaw = processedImages[0];
 						titlePreProcess = processedImages[1]; // StarDist, titlePreProcess is equal to starDist label image output
 					
@@ -2193,7 +2248,6 @@ macro QuantycFOS {
 	SaveStatisticWindow(dirOutRoot);
 	CloseROIsManager();
 	CloseLogWindow(dirOutRoot);
-	// CloseMemoryWindow();
 	
 	// Display the images
 	setBatchMode(false);
