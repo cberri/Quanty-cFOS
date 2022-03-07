@@ -607,7 +607,7 @@ function sfprintsf(textSummary) {
 		run("Text Window...", "name="+titleSummaryOutput+" width=90 height=20 menu");
 		
 		// Print the header and output the first line of text
-		print(outputSummaryText, "% Input Image File Name\t" + "% ROI Name Selected\t" + "% Total Number of Cells Counted\t" + "% cFOS Positive Cells Counted\t" + "% cFOS FALSE Positive Cells Counted\t" + "% cFOS Intensity Threshold\t" + "% cFOS Area Cutoff\t" +  "\n");
+		print(outputSummaryText, "% Input Image File Name\t" + "% ROI Name Selected\t" + "% Total Number of Cells Counted\t" + "% cFOS Positive Cells Counted\t" + "% cFOS FALSE Positive Cells Counted\t" + "% cFOS Intensity Threshold\t" + "% cFOS Area Cutoff" +  "\n");
 		print(outputSummaryText, textSummary +"\n");
 
 		// Minimize the Summary window
@@ -1924,7 +1924,7 @@ macro QuantycFOS {
 
 			// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			// User can test different threshold methods and measure cell size
-			if (previewMode == true && usePreProcessedImg == true && runStarDist == false) {
+			if (previewMode == true && usePreProcessedImg == true && runStarDist == false && batch == false) {
 
 				// Open the input PM image
 				open(dirInPreProcess + fileListPreProcess[i]);
@@ -1953,7 +1953,7 @@ macro QuantycFOS {
 
 				// Output the user setting
 				print("User choose custom setting: Threshold type << "  + thresholdType + " >> / Min size area << " + smallerObjSize + " pixels^2 >>");
-				
+			
 			} else {
 
 				if (runStarDist == true) {
