@@ -271,7 +271,8 @@ macro ImageQualityControl {
             getPixelSize(unit, pixelWidth, pixelHeight);
             
             // 6. Background estimation
-            run("Duplicate...", " ");
+            run("Duplicate...", "dupl");
+            rename("background");
 			run("Gaussian Blur...", "sigma=30");
 			rawBackground = getTitle();
             
