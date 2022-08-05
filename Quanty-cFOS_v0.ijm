@@ -15,6 +15,10 @@
  * segment the cell in 2D. In this case only one folder will be the input for the Quanty-cFOS script.
  * With few changes in the code the user can also load a specific model pretrained on his/her own data.
  * 
+ * To DO:
+ * 
+ * 	> Batch Processing with Threshold PM Preview Mode
+ * 
  * ##########################################################################################################################
  */
 
@@ -247,7 +251,7 @@ function UserInput() {
 	Dialog.addNumber("Optimization Steps (N. Images)", optIntSteps);
 	Dialog.addMessage("____________________________________________________________________________");
 	Dialog.addMessage("\n*Quanty-cFOS.ijm tool has been developed for Prof Rohini Kuner's lab members\n and the Heidelberg Pain Consortium (SFB 1158 - https://www.sfb1158.de/)", 11, "#001090");
-	Dialog.addMessage("	 **Last Update: 2022-02-28", 11, "#001090");
+	Dialog.addMessage("	 **Last Update: 2022-08-02", 11, "#001090");
 	
 	// Add Help button
 	html = "<html>"
@@ -1584,6 +1588,8 @@ function ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPrePro
         inputTitle = ComputeStack(inputTitleRaw, inputTitlePreProcess, process2D, process3D);
         titleRaw = inputTitle[0];
         titlePreProcess = inputTitle[1];
+        
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 				
 	} else if (usePreProcessedImg == false && runStarDist == true && process2D == true) {
 				
@@ -1637,6 +1643,11 @@ function ImageSegmentation2D(usePreProcessedImg, runStarDist, tails, dirInPrePro
 		rename(title + ".tif");
 		titleRaw = getTitle();
 				
+	} else {
+		
+		// TO DO: Allow Batch Processing
+		exit("Please try again withou Batch Processing!");
+		
 	}
 
 	processedImages = newArray(titleRaw, titlePreProcess);
@@ -1953,6 +1964,10 @@ macro QuantycFOS {
 
 				// Output the user setting
 				print("User choose custom setting: Threshold type << "  + thresholdType + " >> / Min size area << " + smallerObjSize + " pixels^2 >>");
+				
+			} else if (previewMode == true && usePreProcessedImg == true && runStarDist == false && batch == true) {
+				
+				exit("Batch Processing is NOT supported with the selected option!\nPlease try again without Batch Processing!");
 			
 			} else {
 

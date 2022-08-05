@@ -4,9 +4,9 @@
   <img width="924" height="412" src="static/cover.jpg">
 </p
 
-The *Quanty-cFOS.ijm* is an ImageJ/Fiji tool developed to count specifically cFOS labelled cells in fixed brain slices or more generally to count any cell marker in 2D fluorescent images or on Maximum Intensity Projections (MIP) in an unbiased meter. For flexibility reasons this tool is implemented as a macro-set (IJ1) for Image/Fiji (tested on version 1.53c and above)
+The *Quanty-cFOS.ijm* is an ImageJ/Fiji tool developed to count specifically cFOS labelled cells in fixed brain slices or more generally to count cell markers in 2D fluorescent images or on Maximum Intensity Projections (MIP) in an unbiased meter. For flexibility reasons this tool is implemented as a macro-set (IJ1) for Image/Fiji (tested on version 1.53s and above)
 
-The Quanty-cFOS tool uses two different cell detection methods:
+The Quanty-cFOS tool uses two different segmentation methods:
 
 1.  ***StarDist 2D***: ImageJ/Fiji plugin based on the *Versatile* (Fluorescent-Nuclei) interference applied on the raw images ( https://imagej.net/StarDist). The model can be easily customized by training your own StarDist Neural Network and imported in ImageJ/Fiji. Please check the StarDist Jupyter Notebook (https://github.com/maweigert/neubias_academy_stardist)
 2.  ***ilastik Pixel Classification Workflow***: The probability map can be generated using the *Pixel Classification* workflow in the *ilastik* software (open source) and loaded in addition to the raw images (https://www.ilastik.org/documentation/pixelclassification/pixelclassification). The probability map is thresholded and used as a input for the cell counting. 
@@ -66,19 +66,19 @@ The user can input the range of standard deviations (sigma) to decide the optima
 </p>
 
 
-6. The *Input Dialog Box* pops up and the user can specify the input directory with the raw images to process. The input raw images need to have one channel as MIP or z-stacks. In case of a z-stack, the Quanty-cFOS computes the MIP and start the 2D cell segmentation. To test the Quanty-cFOS you can use the sample images provided together with the tool (`\samples`). 
+6. The *Input Dialog Box* pops up and the user can specify the input directory with the raw images to process. The input raw images need to have one channel as MIP or z-stacks. In case of a z-stack, the Quanty-cFOS computes the MIP and start the 2D cell segmentation. To test the Quanty-cFOS you can use the sample images provided together with the tool (`\samples`)
 6. The *User Input Setting Window* pops up. Please check the *Help* to get familiar with the different options. *Tip*: starting with the default setting can give already decent counts
 
 <p align="center">
   <img width="623" height="187" src="static/user_input_setting.png">
 </p>
-8. Press *OK*, the first image will be processed and the *User Input Setting Window* pops up again, every time a new image is processed. To automate further the counting and do not display the *User Input Setting* dialog box for each image the user can check in the *Main Setting Windows* the *Batch Analysis* and set the *Optimization Steps* to the number of images contained in the input raw directory (*e.g.:* 10 Images = 10 Optimization Steps)
+8. Press *OK*, the first image will be processed and the *User Input Setting Window* pops up again, every time a new image is processed. To automate further the counting and do not display the *User Input Setting* dialog box for each image the user can check in the *Main Setting Windows* the *Batch Analysis* and set the *Optimization Steps* to the number of images needed to compute the intensity cutoff (*e.g.:* 10 Optimization Steps =  first 10 Images are used to compute the intensity cutoff)
 9. The Quanty-cFOS output is a folder with sub-folders for each raw image processed. Each sub-folder has the same name of the input image and contains:
 
    - A *csv* file with the Center of Mass of each detected cell (X, Y, ID, State)
    - A labeled image that displays in yellow the cFOS true positive cells (ID 255) and in purple the cFOS false positive cells (ID 50)
    - The roiManager ROIs with cFOS true positive cells highlighted (see User Input Setting *RoiManager ROIs Tag* function in the Help)
-   - By selecting the *Batch Analysis* an additional folder named *LabeledImages* is created. This folder contains all the segmented cells as labeled images for cFOS positive (pixel value 255) and negative (pixel value 50). The idea is to help the user with the next step of the analysis by collecting all the outputs in one single directory 
+   - By selecting the *Batch Analysis* an additional folder named *LabeledImages* is created. This folder contains all the segmented cells as labeled images for cFOS positive (pixel value 255) and negative (pixel value 50). The idea is to help the user with the next steps of the analysis by collecting all the outputs in one single directory 
 
 10. The summary counts are saved in the main directory in the *SummaryMeasurements.cs*v file (tab separator) and the *Log.txt* file contains the user settings used for the analysis. The Log file can be used to document your analysis steps and for instance added in your favorite electronic lab-book 
 
