@@ -114,3 +114,19 @@ Select *Multiple Sub-Brain Region* has been added to allow users to select speci
 
 Select *Allow Preview User Setting* to preview the intensity threshold and area cutoff used for the ilastik probability map segmentation (simple method). User can change the intensity threshold method and the cell size filter (area) to best process the images. Currently we support simple thresholding methods to segment cell in the ilastik probability map but we are happy to change the segmentation strategy if someone is interested. Please get in touch with us
 
+
+
+## Citation
+
+Please cite the paper if you are using the Quanty-cFOS tool in your research:
+
+In preparation.
+
+
+
+## References
+
+Schmidt, U., Weigert, M., Broaddus, C., & Myers, G. (2018). Cell Detection with Star-Convex Polygons. In Medical Image Computing and Computer Assisted Intervention – MICCAI 2018 (pp. 265–273). Springer International Publishing.[ doi:10.1007/978-3-030-00934-2_30](https://doi.org/10.1007/978-3-030-00934-2_30)
+
+*ilastik: interactive machine learning for (bio)image analysis*
+Stuart Berg, Dominik Kutra, Thorben Kroeger, Christoph N. Straehle, Bernhard X. Kausler, Carsten Haubold, Martin Schiegg, Janez Ales, Thorsten Beier, Markus Rudy, Kemal Eren, Jaime I Cervantes, Buote Xu, Fynn Beuttenmueller, Adrian Wolny, Chong Zhang, Ullrich Koethe, Fred A. Hamprecht & Anna Kreshuk in: Nature Methods, (2019)
