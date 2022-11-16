@@ -238,7 +238,7 @@ function UserInput() {
 	optIntSteps = 3;
 
 	Dialog.create("Main Setting Window");
-	Dialog.addMessage("Quanty-cFOS for Semi/Automated cFOS Cells Counting & Beyond", 18);
+	Dialog.addMessage("Quanty-cFOS for Semi-Automated Fos/c-fos Cells Counting & Beyond", 18);
 	Dialog.addMessage("____________________________________________________________________________");
 	Dialog.addCheckbox("Use Pre-Processed Image (ilastik Pixel Classification)", ilastikPM);
 	Dialog.addCheckbox("Run StarDist 2D (Versatile - Fluorescent Nuclei)", starDist);
@@ -250,8 +250,10 @@ function UserInput() {
 	Dialog.addToSameRow();
 	Dialog.addNumber("Optimization Steps (N. Images)", optIntSteps);
 	Dialog.addMessage("____________________________________________________________________________");
-	Dialog.addMessage("\n*Quanty-cFOS.ijm tool has been developed for Prof Rohini Kuner's lab members\n and the Heidelberg Pain Consortium (SFB 1158 - https://www.sfb1158.de/)", 11, "#001090");
-	Dialog.addMessage("	 **Last Update: 2022-08-02", 11, "#001090");
+	Dialog.addMessage("\n*Quanty-cFOS.ijm tool has been initially developed for Prof Rohini Kuner's lab members\n and the Heidelberg Pain Consortium (SFB 1158 - https://www.sfb1158.de)", 11, "#001090");
+	Dialog.addMessage("	 **Last Update: 2022-11-16", 11, "#001090");
+	Dialog.addMessage("	 ***Please cite the paper if you are using the Quanty-cFOS tool in your research: <<In preparation>>", 11, "#001090");
+
 	
 	// Add Help button
 	html = "<html>"
@@ -259,12 +261,12 @@ function UserInput() {
 		+ "<h1> <center> &#128000; Quanty-cFOS &#128000; </center> </h1>"
 		+ "<h3> <section> " 
 		+ "<b> Options:</b>" 
-			+ "<li><i>Pre-processed Images</i>: [INPUT] Choose the input folder with the raw images and the input folder with the pre-processed images (e.g.: <a href=https://www.ilastik.org/documentation/pixelclassification/pixelclassification>ilastik pixel classification</a>)<br/><br/></li>"
-			+ "<li><i>Run <a href=https://imagej.net/StarDist> StarDist 2D</a></i>: [INPUT] Choose the input folder with the raw data! The pre-trained StarDist 2D model will be use to generate the labels image."
+			+ "<li><i>Preprocessed Images</i>: [INPUT] Choose the input directory with the raw images and the input directory with the pre-processed images. More about <a href=https://www.ilastik.org/documentation/pixelclassification/pixelclassification><i>ilastik pixel classification</i></a><br/><br/></li>"
+			+ "<li><i>Run <a href=https://imagej.net/StarDist> StarDist 2D</a></i>: [INPUT] Choose the input directory with the raw images! The pre-trained StarDist versatile fluorescent 2D model is used for cell segmentation."
 			+ " Increase the <b> StarDist Tails Number </b> in case of out-of-memory errors. <i><b>NB:</i></b> Higher the number of tails slower is the process! <br/><br/></li>"
-			+ "<li><i>Batch Analysis</i>: User can decide to process the input images one-by-one with a specific setting or process the input images using the same setting <br/><br/></li>"
-			+ "<li><i>Optimization Steps</i>: Number of images that the user wants to process semi-automatically or in case of cFOS counting used to compute the optimized threshold value."
-			+ " NB: The user should exclude these images from the final cFOS counting or reprocess the images using the optimized threshold. Check the LOG file to find the value used<br/><br/></li>"
+			+ "<li><i>Batch Analysis</i>: User can decide to process the input images one-by-one with a specific intensity cutoff or process the input images using the same intensity cutoff <br/><br/></li>"
+			+ "<li><i>Optimization Steps</i>: Number of images used to compute the intensity threshold cutoff value."
+			+ " NB: User should exclude these images from the final Fos/<i>c-fos</i> counting or reprocess the images using the computed intensity cutoff. Check the LOG file to find the value used<br/><br/></li>"
 		+ "</h3> </section>"
 		+ "</style>"
 		+ "</html>";
@@ -337,10 +339,10 @@ function InputDialog(title) {
 	Dialog.addToSameRow();
 	Dialog.addCheckbox("3D Analysis (Not Implemented)", process3D);
 	
-	Dialog.addCheckbox("cFOS Automated Optimization (Experimental)", cFOS);
+	Dialog.addCheckbox("Automated Optimization (Experimental)", cFOS);
 	Dialog.addToSameRow();
 	Dialog.addNumber("Sigma", sigma);
-	Dialog.addCheckbox("cFOS Manual Optimization", usercFOSThreshold);
+	Dialog.addCheckbox("Manual Optimization", usercFOSThreshold);
 
 	Dialog.addCheckbox("Select Multiple Sub-Brain Regions", processSubRegions);
 	Dialog.addToSameRow();
@@ -352,19 +354,19 @@ function InputDialog(title) {
 		+ "<h1> &#128295; Help: </h1>"
 		+ "<h3> <section>" 
 		+ "<b> User Input Setting:</b>" 
-			+ "<li><i>Image Tag: </i> any useful information that can be used to name the ROIs in the RoiManger for the positive cells<br/><br/></li>"
-			+ "<li><i>2D Analysis: </i> the quantification is done on the Maximum Intensity Projection<br/><br/></li>" 
-			+ "<li><i>(Not implemented) 3D Analysis: </i> the quantification is done in 3D (volxel based)<br/><br/></li>" 
-			+ "<li><i>cFOS Automated Optimization</i> <b>(&#8721; MeanIntensity / nROIs)</b>: compute the mean intensity value and the standard deviation of all ROIs."
-			+ " <b>[Assumption Normal Distribution]<b/> the zScore <b>(z = &#x3C7; - &#x3BC; / &#x3C3;)</b> is computed for each ROI and used to classify cFOS positive and false positive neurons."
-			+ " The sigma can be changed to increase or decrease the mean intensity cutoff [e.g.: 3]. This is still under testing, please be careful and validate the counting results with ground truth data.<br/><br/></li>"
-			+ "<li><i>cFOS Maual Optimization: </i> the user can manually enter the intensity value to discriminate between cFOS positive"
-			+ " and false positive neurons. cFOS positive cells have a value above the threshold / cFOS false positive cells have a value below the threshold."
-			+ " <b>Uncheck the cFOS optimization boxes if your goal is to count the total number of cells in the images."
-			+ " The batch mode analysis can be use without any optimization step (default)</b><br/><br/></li>"
-			+ "<li><i>Select Multiple Sub-Brain Regions: </i> the user can process many regions in the same input image one-by-one<br/><br/></li>" 
+			+ "<li><i>Image Tag: </i>RoiManger ROIs name used for Fos/<i>c-fos</i> positive cells<br/><br/></li>"
+			+ "<li><i>2D Analysis: </i>Single slices or Maximum Intensity Projections<br/><br/></li>" 
+			+ "<li><i>3D Analysis: </i>Not implemented<br/><br/></li>" 
+			+ "<li><i>Automated Optimization</i> <b>(&#8721; MeanIntensity / nROIs)</b>: compute the mean intensity value and the standard deviation of all ROIs."
+			+ " <b>[Assumption Normal Distribution]<b/> the z-score <b>(z = &#x3C7; - &#x3BC; / &#x3C3;)</b> is computed for each ROI and used to calculate the intensiy cutoff for Fos<i>/c-fos</i> positive and negative neurons."
+			+ " The sigma value can be modified to increase or decrease the intensity cutoff [e.g.: 3]. Counts validation can be performed using ground truth images<br/><br/></li>"
+			+ "<li><i>Manual Optimization: </i>user can manually enter the intensity cutoff value to count Fos/<i>c-fos</i> positive"
+			+ " and negative neurons (positive cells above the intensity threshold / negative cells below the intensity threshold)<br/><br/></li>"
+			+ "<li><i>All Cell Count: </i>Uncheck the automated and manual optimization boxes if your goal is to count the total number of cells in the images."
+			+ " The optimization steps function is not used<br/><br/></li>"
+			+ "<li><i>Select Multiple Sub-Brain Regions: </i>user can select and process many regions in the same input image one-by-one<br/><br/></li>" 
 			+ "<li><i>Preview Mode: </i> user can visualize the image to threshold, test different threshold methods and measure the area of " 
-			+ "the cells to detect. This information can be use as input for the cells segmentation in the Preview Dialog box (Not supported for StarDist)<br/><br/></li>"
+			+ "the cells to detect. This information can be used as input for the cells segmentation in the Preview Dialog box (Not supported for StarDist)<br/><br/></li>"
 		+ "</h3> </section>"
 		+ "</style>"
 		+ "</html>";
@@ -391,8 +393,8 @@ function InputDialog(title) {
 		showMessage("Warning", "<html>"
 			+ "<style> html, body { width: 600; height: 80; margin: 5; padding: 0; background-color: #ECF1F4; }"
 			+"<h4><br><font size=+0.5><font color=red>&#x1F6AB INVALID INPUT SETTINGS</font color></font size></br></h4>"
-     		+"<br>You choose to run <b><i>cFos Automated Optimization & Manual Optimization</b></i></br>"
-     		+"<br>> Running <b><i>cFOS Manual Optimization</b></i></br>"
+     		+"<br>You choose to run <b><i>Automated Optimization & Manual Optimization</b></i></br>"
+     		+"<br>> Running <b><i>Manual Optimization</b></i></br>"
      		+ "</style>"	
      		+"</html>");
      			
@@ -437,7 +439,7 @@ function CheckStarDistInstallation() {
 // Create Intensity Threshold values plot
 function PlotOptimizationValueInt(optIntArray, intensityCutOff, optIntSteps, reduceNaN) {
 	
-	Plot.create("Intensity Threshold Optimization", "Optimization Steps", "Intensity Threshold");
+	Plot.create("Intensity Threshold Optimization Cutoff", "Optimization Steps", "Intensity Threshold");
 	Plot.setColor("red");
 	Plot.setBackgroundColor("#ECF1F4");
 	//Plot.setLimitsToFit();
@@ -446,7 +448,7 @@ function PlotOptimizationValueInt(optIntArray, intensityCutOff, optIntSteps, red
 	Plot.add("diamond", optIntArray);
 	Plot.setColor("black");  
 	Plot.setFontSize(18);  
-	Plot.addText("*Opt. Int. Threshold: " + intensityCutOff, 0.45, 0.5);
+	Plot.addText("*Opt. Int. Cutoff: " + intensityCutOff, 0.45, 0.5);
 	Plot.setLineWidth(8);
 
 }
@@ -611,7 +613,7 @@ function sfprintsf(textSummary) {
 		run("Text Window...", "name="+titleSummaryOutput+" width=90 height=20 menu");
 		
 		// Print the header and output the first line of text
-		print(outputSummaryText, "% Input Image File Name\t" + "% ROI Name Selected\t" + "% Total Number of Cells Counted\t" + "% cFOS Positive Cells Counted\t" + "% cFOS FALSE Positive Cells Counted\t" + "% cFOS Intensity Threshold\t" + "% cFOS Area Cutoff" +  "\n");
+		print(outputSummaryText, "% Input Image File Name\t" + "% ROI Name Selected\t" + "% Total Number of Cells Counted\t" + "% Fos/c-fos Positive Cells Counted (above cutoff)\t" + "% Fos/c-fos Negative Cells Counted (below cutoff)\t" + "% Intensity Cutoff\t" + "% Area Cutoff" +  "\n");
 		print(outputSummaryText, textSummary +"\n");
 
 		// Minimize the Summary window
@@ -957,8 +959,8 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 				cutOffValues = AutomatedThresholdEstimation(sigma, nSubregion);
 				intensityCutOff = cutOffValues[0];
 				areaCutOff = cutOffValues[1];
-				print("cFOS Optimization_ " + "ROI0-" + nSubregion + " Automated Mean Intensity CutOff:\t" + intensityCutOff + " - Sigma value equal to: " + sigma);
-				print("cFOS Optimization_ " + "ROI0-" + nSubregion + " Automated Area CutOff:\t" + areaCutOff);
+				print("Optimization_ " + "ROI0-" + nSubregion + " Automated Mean Intensity CutOff:\t" + intensityCutOff + " - Sigma value equal to: " + sigma);
+				print("Optimization_ " + "ROI0-" + nSubregion + " Automated Area CutOff:\t" + areaCutOff);
 
 			} else if (batch == true) {
 
@@ -997,7 +999,7 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 					//intensityCutOff = AutomatedThresholdEstimation();
 					optIntSteps = optIntSteps - reduceNaN;
 					//print("Intensity CutOff Optimization Ended!" + " It will use value: " + optValue /optIntSteps);
-					print("Batch cFOS Optimization_ " + "ROI0-" + nSubregion + " Automated Mean Intensity CutOff:\t" + optValue /optIntSteps);
+					print("Batch Optimization_" + "ROI0-" + nSubregion + " Automated Mean Intensity CutOff:\t" + optValue /optIntSteps);
 					intensityCutOff = optValue /optIntSteps;
 
 					if (i == (optIntSteps + reduceNaN)) {
@@ -1009,7 +1011,7 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 
 					// Area cutoff
 					//print("Area CutOff Optimization Ended!" + " It will use value: " + optArea /optIntSteps);
-					print("Batch cFOS Optimization_ " + "ROI0-" + nSubregion + " Automated Area CutOff:\t" + optArea /optIntSteps);
+					print("Batch Optimization_" + "ROI0-" + nSubregion + " Automated Area CutOff:\t" + optArea /optIntSteps);
 					areaCutOff = optArea /optIntSteps;
 						
 				}
@@ -1172,8 +1174,8 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 				
 				// Create an input dialog box
 				Dialog.createNonBlocking("User Settings...");
-				Dialog.addNumber("cFOS Mean Intensity Value (suggested):", intensityCutOff);
-				Dialog.addNumber("cFOS Area Value (suggested):", areaCutOff);
+				Dialog.addNumber("Intensity Cutoff:", intensityCutOff);
+				Dialog.addNumber("Cutoff Area:", areaCutOff);
 		
 				// Add Help button
 				html = "<html>"
@@ -1181,10 +1183,10 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 					+ "<h2> &#128295; Help: </h2>"
 					+ "<h3>"
 					+ "<b> <br /> Tips <br /> </b>" 
-					+ "<li/> <i>Intensity Threshold:</i> adjust the threshold to find the best value for cFOS positive cells (left image).\n"
+					+ "<li/> <i>Intensity Cutoff:</i> adjust the cutoff value to find the best threshold for positive cells (left image).\n"
 					+ "The right image shows the segmentation result (binary or labeled image).\n"
-					+ "The suggested intensity threshold value displayed in the dialog box is computed by the automated cFOS optimization algorithm on the current open image</li>"
-					+ "<li/> <i>Cell Area Cutoff: adjust the min size area cutoff for cFOS positive cells. If the raw image is calibrated the area in um^2</i></li>"
+					+ "The suggested intensity cutoff value displayed in the dialog box is computed by the automated optimization algorithm on the current open image</li>"
+					+ "<li/> <i>Cutoff Area:</i> adjust the min size area cutoff for positive cells. If the raw image is calibrated the area is in um^2</li>"
 					+ "</h3>"
 					+ "</style>"
 					+ "</html>";
@@ -1214,8 +1216,8 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 				close(titleRawSelComb);
 	
 				// Print the intensity value entered by the user
-				print("cFOS Optimization_ " + "ROI0-" + nSubregion + " Manual Mean Intensity CutOff:\t" + intensityCutOff);
-				print("cFOS Optimization_ " + "ROI0-" + nSubregion + "- Manual Area CutOff:\t" + areaCutOff);
+				print("Optimization_ " + "ROI0-" + nSubregion + " Manual Mean Intensity CutOff:\t" + intensityCutOff);
+				print("Optimization_ " + "ROI0-" + nSubregion + "- Manual Area CutOff:\t" + areaCutOff);
 
 			} else if (batch == true) {
 
@@ -1265,20 +1267,21 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 					setThreshold(intensityCutOff, max);
 					
 					// Create an input dialog box
+					// Create an input dialog box
 					Dialog.createNonBlocking("User Settings...");
-					Dialog.addNumber("cFOS Mean Intensity Value (suggested):", intensityCutOff);
-					Dialog.addNumber("cFOS Area Value (suggested):", areaCutOff);
-			
+					Dialog.addNumber("Intensity Cutoff:", intensityCutOff);
+					Dialog.addNumber("Cutoff Area:", areaCutOff);
+		
 					// Add Help button
 					html = "<html>"
 						+ "<style> html, body { width: 500; height: 250; margin: 10; padding: 0; background-color: #ECF1F4; }"
 						+ "<h2> &#128295; Help: </h2>"
 						+ "<h3>"
 						+ "<b> <br /> Tips <br /> </b>" 
-						+ "<li/> <i>Intensity Threshold:</i> adjust the threshold to find the best value for cFOS positive cells (left image).\n"
+						+ "<li/> <i>Intensity Cutoff:</i> adjust the cutoff value to find the best threshold for positive cells (left image).\n"
 						+ "The right image shows the segmentation result (binary or labeled image).\n"
-						+ "The suggested intensity threshold value displayed in the dialog box is computed by the automated cFOS optimization algorithm on the batch images (average value)</li>"
-						+ "<li/> <i>Cell Area Cutoff: adjust the min size area cutoff for cFOS positive cells. If the raw image is calibrated the area in um^2</i></li>"
+						+ "The suggested intensity cutoff value displayed in the dialog box is computed by the automated optimization algorithm on the current open image</li>"
+						+ "<li/> <i>Cutoff Area:</i> adjust the min size area cutoff for positive cells. If the raw image is calibrated the area is in um^2</li>"
 						+ "</h3>"
 						+ "</style>"
 						+ "</html>";
@@ -1323,10 +1326,10 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 					
 					//intensityCutOff = AutomatedThresholdEstimation();
 					//print("Intensity CutOff Optimization Ended!" + " It will use value: " + optValue /optIntSteps);
-					print("Batch cFOS Optimization_ " + "ROI0-" + nSubregion + " Automated Mean Intensity CutOff:\t" + optValue /optIntSteps);
+					print("Batch Optimization_" + "ROI0-" + nSubregion + " Automated Mean Intensity CutOff:\t" + optValue /optIntSteps);
 					intensityCutOff = optValue /optIntSteps;
 					//print("Area CutOff Optimization Ended!" + " It will use value: " + optArea /optIntSteps);
-					print("Batch cFOS Optimization_ " + "ROI0-" + nSubregion + " Automated Area CutOff:\t" + optArea /optIntSteps);
+					print("Batch Optimization_" + "ROI0-" + nSubregion + " Automated Area CutOff:\t" + optArea /optIntSteps);
 					areaCutOff = optArea /optIntSteps;
 					
 				}
