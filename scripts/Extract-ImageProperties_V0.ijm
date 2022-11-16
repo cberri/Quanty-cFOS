@@ -150,9 +150,7 @@ function sfprintsf(textSummary) {
 
 }
 
-// #################################################
-// End Functions
-// # 1
+// # 7
 function SaveStatisticWindow(dirOutRoot) {
 
 	// Save the SummaryWindow and close it
@@ -162,7 +160,7 @@ function SaveStatisticWindow(dirOutRoot) {
 	
 }
 
-// # 2
+// # 8
 // Close the ROI Manager 
 function CloseROIsManager() {
 	
@@ -179,7 +177,7 @@ function CloseROIsManager() {
      
 }
 
-// # 3
+// # 9
 // Save and close Log window
 function CloseLogWindow(dirOutRoot) {
 	
@@ -196,6 +194,8 @@ function CloseLogWindow(dirOutRoot) {
 	}
 	
 }
+// #################################################
+// End Functions
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // %%%%%%%%%%%%%%%%%%%%% Macro %%%%%%%%%%%%%%%%%%%%%
@@ -209,7 +209,7 @@ macro ImageQualityControl {
 	// Get the starting time
 	getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
 
-	// Chosse teh input raw dirctory
+	// Choose the input raw dirctory
 	dirIn = InputDirectory();
 	
 	// List the file in the input root directory
