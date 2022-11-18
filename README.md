@@ -71,23 +71,25 @@ The user can input the range of standard deviations (*sigma*) to decide the opti
 <p align="center">
   <img width="583" height="434" src="static/main_setting.png">
 </p>
+5. The *Input Dialog Box* pops up and the user can specify the input directory with the raw images to process. The input raw images need to have one channel as MIP or z-stacks. In case of a z-stack, the Quanty-cFOS computes the MIP and starts the 2D cell segmentation. To get familiar with the Quanty-cFOS tool you can use the sample images provided together with the tool (`\samples`)
 
-6. The *Input Dialog Box* pops up and the user can specify the input directory with the raw images to process. The input raw images need to have one channel as MIP or z-stacks. In case of a z-stack, the Quanty-cFOS computes the MIP and starts the 2D cell segmentation. To get familiar with the Quanty-cFOS tool you can use the sample images provided together with the tool (`\samples`)
-7. The *User Input Setting Window* pops up. Please check the *Help* to get familiar with the different options. *Tip*: starting with the default setting can give already decent counts
+
+6. The *User Input Setting Window* pops up. Please check the *Help* to get familiar with the different options. *Tip*: starting with the default setting can give already decent counts
 
 <p align="center">
   <img width="683" height="200" src="static/user_input_setting.png">
 </p>
+7. Press *OK*, the first image will be processed and the *User Input Setting Window* pops up again, every time a new image is processed. To automate further the counting and do not display the *User Input Setting* dialog box for each image the user can choose in the *Main Setting Windows* the *Batch Analysis* and set the *Optimization Steps* to the number of images needed to compute the intensity cutoff (*e.g.:* 10 *Optimization Steps* =  first 10 Images are used to compute the intensity cutoff)
 
-8. Press *OK*, the first image will be processed and the *User Input Setting Window* pops up again, every time a new image is processed. To automate further the counting and do not display the *User Input Setting* dialog box for each image the user can choose in the *Main Setting Windows* the *Batch Analysis* and set the *Optimization Steps* to the number of images needed to compute the intensity cutoff (*e.g.:* 10 *Optimization Steps* =  first 10 Images are used to compute the intensity cutoff)
-9. The Quanty-cFOS output is a folder with sub-folders for each raw image processed. Each sub-folder has the same name of the input image and contains:
+
+8. The Quanty-cFOS output is a folder with sub-folders for each raw image processed. Each sub-folder has the same name of the input image and contains:
 
    - A *csv* file with the Center of Mass of each detected cell (X, Y, ID, State)
    - A labeled image that displays in yellow the Fos/*c-fos* positive cells (ID 255) and in purple the cells counted as negative (ID 50)
    - The RoiManager ROIs with Fos/*c-fos* positive and negative cells highlighted (see User Input Setting RoiManager ROIs Tag function in the Help)
    - By selecting the *Batch Analysis* an additional folder named *LabeledImages* is created. This folder contains all the segmented cells as labeled images for Fos/*c-fos* positive (pixel value 255) and negative (pixel value 50). The idea is to help the user with the next steps of the analysis by collecting all the outputs in one single directory
 
-10. The summary counts are saved in the main directory in the *SummaryMeasurements.cs*v file (tab separator) and the *Log.txt* file contains the user settings used for the analysis. The Log file can be used to document your analysis steps and for instance added in your favorite electronic lab-book 
+9. The summary counts are saved in the main directory in the *SummaryMeasurements.cs*v file (tab separator) and the *Log.txt* file contains the user settings used for the analysis. The Log file can be used to document your analysis steps and for instance added in your favorite electronic lab-book 
 
 
 
