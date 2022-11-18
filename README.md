@@ -71,25 +71,16 @@ The user can input the range of standard deviations (*sigma*) to decide the opti
 <p align="center">
 <<<<<<< HEAD
   <img width="583" height="434" src="static/main_setting.png">
-=======
-  <img width="683" height="534" src="static/main_setting.png">
->>>>>>> main
 </p>
 
 6. The *Input Dialog Box* pops up and the user can specify the input directory with the raw images to process. The input raw images need to have one channel as MIP or z-stacks. In case of a z-stack, the Quanty-cFOS computes the MIP and starts the 2D cell segmentation. To get familiar with the Quanty-cFOS tool you can use the sample images provided together with the tool (`\samples`)
-6. The *User Input Setting Window* pops up. Please check the *Help* to get familiar with the different options. *Tip*: starting with the default setting can give already decent counts
+7. The *User Input Setting Window* pops up. Please check the *Help* to get familiar with the different options. *Tip*: starting with the default setting can give already decent counts
 
 <p align="center">
 <<<<<<< HEAD
   <img width="683" height="200" src="static/user_input_setting.png">
 </p>
 
-
-=======
-  <img width="983" height="300" src="static/user_input_setting.png">
-</p>
-
->>>>>>> main
 8. Press *OK*, the first image will be processed and the *User Input Setting Window* pops up again, every time a new image is processed. To automate further the counting and do not display the *User Input Setting* dialog box for each image the user can choose in the *Main Setting Windows* the *Batch Analysis* and set the *Optimization Steps* to the number of images needed to compute the intensity cutoff (*e.g.:* 10 *Optimization Steps* =  first 10 Images are used to compute the intensity cutoff)
 9. The Quanty-cFOS output is a folder with sub-folders for each raw image processed. Each sub-folder has the same name of the input image and contains:
 
