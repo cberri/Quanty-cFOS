@@ -69,7 +69,6 @@ The user can input the range of standard deviations (*sigma*) to decide the opti
    - *Batch Analysis* and *Optimization Steps* allow to decide how many images will interactively pop up to the user and in case of *Automated Optimization* (see below), the number of images used to compute the intensity threshold cutoff for Fos/*c-fos* positive and negative cells. A recommendation for starting is to leave the box unchecked and proceed to the next step by clicking the *OK* button
 
 <p align="center">
-<<<<<<< HEAD
   <img width="583" height="434" src="static/main_setting.png">
 </p>
 
@@ -77,7 +76,6 @@ The user can input the range of standard deviations (*sigma*) to decide the opti
 7. The *User Input Setting Window* pops up. Please check the *Help* to get familiar with the different options. *Tip*: starting with the default setting can give already decent counts
 
 <p align="center">
-<<<<<<< HEAD
   <img width="683" height="200" src="static/user_input_setting.png">
 </p>
 
