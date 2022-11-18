@@ -2,7 +2,7 @@
  * Project: Semi/Automated 2D cell counting with cFOS intansity threshold optimization
  * [ Prof Rohini Kuner and Heidelberg Pain Consortium (SFB 1158) ]
  * 
- * Developed by Dr. Carlo A. Beretta 
+ * Developed by Dr. Carlo Antonio Beretta 
  * Institute of Pharmacology and Department for Anatomy and Cell Biology @ Heidelberg University
  * Email: 	carlo.beretta@uni-heidelberg.de
  * 			carlo.berri82@googlemail.com
@@ -18,6 +18,7 @@
  * To DO:
  * 
  * 	> Batch Processing with Threshold PM Preview Mode
+ * 	> Cutoff size above filter size
  * 
  * ##########################################################################################################################
  */
@@ -918,7 +919,8 @@ function CellCount2D(cFOS, usercFOSThreshold, title, roiName, width, height, sli
 		run("Watershed");
 
 		// Get the positive cells and create a new image
-		run("Analyze Particles...", "size=["+smallerObjSize+"]-Infinity exclude clear add");
+		// Change this to highObjSize enter by the user
+		run("Analyze Particles...", "size=["+smallerObjSize+"]-["+smallerObjSize*5+"] exclude clear add");
 		newImage("clear", "8-bit black", width, height, slices);
 		roiManager("Show None");
 		roiManager("Show All");
