@@ -2,7 +2,12 @@
 
 <p align="center">
   <img width="924" height="412" src="static/cover.jpg">
+  <img.resize {
+              max-width:auto;
+              max-height:100%;
+              }
 </p
+
 
 The *Quanty-cFOS.ijm* is an ImageJ/Fiji tool developed to count specifically Fos/*c-fos* labelled cells in fixed brain slices or more generally to count cell markers in 2D fluorescent images or on Maximum Intensity Projections (MIP) in an unbiased manner. For flexibility reasons this tool is implemented as a macro-set (IJ1) for Image/Fiji (tested on version 1.53s and above)
 
@@ -13,7 +18,7 @@ The Quanty-cFOS tool uses two different segmentation methods:
 
 The user can decide which method is more suitable to process the input raw images. It is recommended to start with the StarDist 2D *Versatile* model and switch to the ilastik pixel classification workflow only if the detection is not accurate enough or the structures of interest are not convex
 
-The novelty of the Quanty-cFOS counting tool is the *z-score* intensity analysis used to compute the intensity cutoff (*cFOS Automated Optimization*). The algorithm computes the intensity and the standard deviation of each detected cell on the raw images and uses the normalized distance between each single cell intensity and the mean population intensity to calculate the intensity cutoff. Cells above the intesity cutoff are counted positve, below the cutoff - negative
+The novelty of the Quanty-cFOS counting tool is the *z-score* intensity analysis used to compute the intensity cutoff (*Automated Optimization*). The algorithm computes the intensity and the standard deviation of each detected cell on the raw images and uses the normalized distance between each single cell intensity and the mean population intensity to calculate the intensity cutoff. Cells above the intesity cutoff are counted positve, below the cutoff - negative
 
 The workflow consists of two major steps: 
 
@@ -22,7 +27,7 @@ The workflow consists of two major steps:
 
 
 
-## Quanty-cFOS: Automated Intensity Count (Experimental)
+## Quanty-cFOS: Automated Optimization (Experimental)
 
 Fos/*c-fos* staining is known to work differently depending on many experimental factors that might include fixation, antibody type and batch, section thickness... Fos/*c-fos* neurons manual count is extremely time consuming and can differ depending on the decision criteria in particular when is performed manually by visually annotating cells. Fos/*c-fos* automated intensity count can be used to significantly speed up the counting process and further reduce human counts bias
 
@@ -61,19 +66,19 @@ The user can input the range of standard deviations (*sigma*) to decide the opti
 
    - In case of large images increase the *StarDist Tails Number*
 
-   - *Batch Analysis* and *Optimization Steps* allow to decide how many images will interactively pop up to the user and in case of *cFOS Automated Optimization* (see below), the number of images used to compute the intensity threshold cutoff for Fos/*c-fos* positive and negative cells. A recommendation for starting is to leave the box unchecked and proceed to the next step by clicking the *OK* button
+   - *Batch Analysis* and *Optimization Steps* allow to decide how many images will interactively pop up to the user and in case of *Automated Optimization* (see below), the number of images used to compute the intensity threshold cutoff for Fos/*c-fos* positive and negative cells. A recommendation for starting is to leave the box unchecked and proceed to the next step by clicking the *OK* button
 
 <p align="center">
-  <img width="483" height="334" src="static/main_setting.png">
+  <img width="683" height="534" src="static/main_setting.png">
 </p>
-
 
 6. The *Input Dialog Box* pops up and the user can specify the input directory with the raw images to process. The input raw images need to have one channel as MIP or z-stacks. In case of a z-stack, the Quanty-cFOS computes the MIP and starts the 2D cell segmentation. To get familiar with the Quanty-cFOS tool you can use the sample images provided together with the tool (`\samples`)
 6. The *User Input Setting Window* pops up. Please check the *Help* to get familiar with the different options. *Tip*: starting with the default setting can give already decent counts
 
 <p align="center">
-  <img width="623" height="187" src="static/user_input_setting.png">
+  <img width="983" height="300" src="static/user_input_setting.png">
 </p>
+
 8. Press *OK*, the first image will be processed and the *User Input Setting Window* pops up again, every time a new image is processed. To automate further the counting and do not display the *User Input Setting* dialog box for each image the user can choose in the *Main Setting Windows* the *Batch Analysis* and set the *Optimization Steps* to the number of images needed to compute the intensity cutoff (*e.g.:* 10 *Optimization Steps* =  first 10 Images are used to compute the intensity cutoff)
 9. The Quanty-cFOS output is a folder with sub-folders for each raw image processed. Each sub-folder has the same name of the input image and contains:
 
